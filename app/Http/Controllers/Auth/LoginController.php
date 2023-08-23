@@ -55,8 +55,10 @@ class LoginController extends Controller
         // Tambahkan data ke session
         $request->session()->put('id', $user->id);
         $request->session()->put('name', $user->name);
+        $request->session()->put('role', $user->role);
 
-        return redirect()->intended('home');
+            if ($user->role == 'admin') return redirect()->intended('admin');
+            else return redirect()->intended('home');
     }
 
     // Jika otentikasi gagal

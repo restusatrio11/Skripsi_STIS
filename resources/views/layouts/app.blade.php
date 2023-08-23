@@ -20,11 +20,20 @@
 
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+        <nav class="navbar navbar-expand-md navbar-light shadow-sm" style="background-color: white;">
             <div class="container">
-                <a class="navbar-brand" href="{{ url('home') }}">
-                    {{ config('app.name', 'Laravel') }}
-                </a>
+                <div class="row">
+                    <div class="col-md-4 text-left">
+                        <img src="\images\BPS.png" alt="Logo" class="logo" style="max-width: 60px;">
+                    </div>
+                    <div class="col-md-8">
+                        <a class="navbar-brand" href="{{ url('home') }}" style="font-size: 25px; padding-left:20px;">
+                            {{ config('app.name', 'Laravel') }}
+                        </a>
+                    </div>
+
+                </div>
+
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
