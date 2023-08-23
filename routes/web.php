@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +22,11 @@ Route::get('/', function () {
 
 Auth::routes();
 Route::middleware(['auth'])->group(function () {
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('admin', function () { return view('admin'); })->middleware('checkRole:admin');
-Route::get('user', function () { return view('user'); })->middleware(['checkRole:user,admin']);});
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+    Route::get('admin', function () {
+        return view('admin');
+    })->middleware('checkRole:admin');
+
+    Route::get('user', [UserController::class, 'index'])->middleware(['checkRole:user,admin']);
+});
