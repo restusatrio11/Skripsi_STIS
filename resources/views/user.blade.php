@@ -22,14 +22,15 @@
                 <tbody>
                     @foreach ($tasks as $key => $task)
                         <tr>
+                            <input id="id{{ $key }}" type="hidden" value="{{ $task->id }}">
                             <td>{{ $key + 1 }}</td>
-                            <td>{{ $task->nama }}</td>
+                            <td id="nama{{ $key }}">{{ $task->nama }}</td>
                             <td>{{ $task->asal }}</td>
-                            <td>{{ $task->target }}</td>
-                            <td>{{ $task->realisasi }} <i class="fa-solid fa-square-plus" role="button" data-bs-toggle="modal" data-bs-target="#exampleModal"></i></td>
+                            <td id="target{{ $key }}">{{ $task->target }}</td>
+                            <td id="realisasi{{ $key }}">{{ $task->realisasi }} <i data="{{ $key }}" class="fa-solid fa-square-plus" role="button" data-bs-toggle="modal" data-bs-target="#exampleModal"></i></td>
                             <td>{{ $task->satuan }}</td>
                             <td>{{ date('d M Y', strtotime($task->deadline)) }}</td>
-                            <td>{{ date('d M Y', strtotime($task->tgl_realisasi)) }}</td>
+                            <td id="tgl_realisasi{{ $key }}">{{ date('d M Y', strtotime($task->tgl_realisasi)) }}</td>
                             <td>{{ $task->nilai }}</td>
                             <td>{{ $task->keterangan }}</td>
                         </tr>
@@ -52,11 +53,31 @@
                     <form>
                         <div class="mb-3">
                             <label for="idtask" class="form-label">ID Kegiatan</label>
-                            <input type="text" class="form-control" id="idtask">
+                            <input type="text" class="form-control" id="idtask" disabled>
                         </div>
                         <div class="mb-3">
-                        <label for="target" class="form-label">Target</label>
-                        <input type="text" class="form-control" id="target">
+                            <label for="nama" class="form-label">Nama Kegiatan</label>
+                            <input type="text" class="form-control" id="nama" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label for="target" class="form-label">Target</label>
+                            <input type="text" class="form-control" id="target" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label for="realisasi" class="form-label">Realisasi</label>
+                            <input type="text" class="form-control" id="realisasi" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tgl_realisasi" class="form-label">Tanggal Realisasi</label>
+                            <input type="text" class="form-control" id="tgl_realisasi">
+                        </div>
+                        <div class="mb-3">
+                            <label for="update" class="form-label">Update Realisasi</label>
+                            <input type="text" class="form-control" id="update">
+                        </div>
+                        <div class="mb-3">
+                            <label for="update" class="form-label">Upload Hasil Kegiatan</label><br>
+                            <input type="file" name="file">
                         </div>
                         <br>
                         <button type="submit" class="btn btn-primary">Submit</button>
@@ -72,4 +93,14 @@
 
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
     <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(".fa-square-plus").click(function () {
+            let key = $(this).attr('data');
+            let id = $(`#id${key}`).val();
+            let nama = $(`#nama${key}`).text();
+            let target = $(`#target${key}`).text();
+            let realisasi = $(`#realisasi${key}`).text();
+            let tgl_realisasi = $(`#tgl_realisasi${key}`).text();
+        });
+    </script>
 @endsection
