@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Tugas;
 use App\Http\Requests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,5 +17,33 @@ class UserController extends Controller
         $user_id = Session::get('id');
         $tasks = DB::table('tasks')->where('pegawai_id', '=', $user_id)->get();
         return view('user', ['tasks' => $tasks]);
+    }
+
+    public function update(Request $request)
+    {
+        $data = Tugas::find($request->input('idhidden'));
+        if ($request->input('update') != "") 
+            $data->tgl_realisasi = date("Y-m-d", strtotime($request->input('update')));
+
+        if ($request->file('file') != null) {
+            $file = $request->file('file');
+            $nama_file = 'Tugas ID '.$request->input('idhidden').'.'.$file->getClientOriginalExtension();
+            $file->move('file',$nama_file);
+            $data->file = $nama_file;
+        }
+
+        if ($data->tgl_realisasi > $data->deadline) $data->nilai = 90;
+
+        $data->keterangan = 'Tunggu Konfirmasi';
+
+        $simpan = $data->save();
+        if ($simpan) {
+            Session::flash('status', 'Tugas berhasil diupdate');
+        } else {
+            Session::flash('status', 'Tugas gagal diupdate');
+        }
+        $user = Auth::user();
+        if ($user->role == 'admin') return redirect('admin');
+        else return redirect('user');
     }
 }
