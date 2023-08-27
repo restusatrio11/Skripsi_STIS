@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ChartController;
 use App\Http\Controllers\DataController;
 
 
@@ -28,6 +29,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::get('admin', [AdminController::class, 'index'])->middleware('checkRole:admin');
     Route::get('user', [UserController::class, 'index'])->middleware(['checkRole:user,admin']);
+    Route::get('visual', [ChartController::class, 'index'])->middleware(['checkRole:user,admin']);
+    Route::get('getAvg', [ChartController::class, 'getAvg'])->middleware(['checkRole:user,admin']);
+    Route::get('getCount', [ChartController::class, 'getCount'])->middleware(['checkRole:user,admin']);
 });
 
 Route::post('store',[AdminController::class, 'store'])->middleware('checkRole:admin')->name('store');

@@ -96,8 +96,11 @@
                                     data-bs-toggle="modal" data-bs-target="#exampleModal"></i></td>
                             <td>{{ $task->satuan }}</td>
                             <td>{{ date('d M Y', strtotime($task->deadline)) }}</td>
-                            <td id="tgl_realisasi{{ $key }}">{{ date('d M Y', strtotime($task->tgl_realisasi)) }}
-                            </td>
+                            @if ($task->tgl_realisasi != null)
+                                <td class="text-center">{{ date('d M Y', strtotime($task->tgl_realisasi)) }}</td>
+                            @else
+                                <td class="text-center"></td>
+                            @endif
                             <td>
                                 @if ($task->file != null)
                                     <a href="file/{{ $task->file }}"><button class="btn btn-success"

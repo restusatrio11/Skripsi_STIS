@@ -27,6 +27,7 @@
                         <tr>
                             <input id="id{{ $key }}" type="hidden" value="{{ $task->task_id }}">
                             <input id="pegawai_id{{ $key }}" type="hidden" value="{{ $task->pegawai_id }}">
+                            <input id="file{{ $key }}" type="hidden" value="{{ $task->file }}">
                             <td class="text-center">{{ $key + 1 }}</td>
                             <td class="text-center" id="Pegawai{{ $key }}">{{ $task->name }}</td>
                             {{-- <td class="text-center" id="pegawai_id{{ $key }}">{{ $task->pegawai_id }}</td> --}}
@@ -37,9 +38,26 @@
                             <td class="text-center" id="Satuan{{ $key }}">{{ $task->satuan }}</td>
                             <td class="text-center" id="Deadline{{ $key }}" data-value="{{ $task->deadline }}">
                                 {{ date('d M Y', strtotime($task->deadline)) }}</td>
-                            <td class="text-center">{{ date('d M Y', strtotime($task->tgl_realisasi)) }}</td>
+                            @if ($task->tgl_realisasi != null)
+                                <td class="text-center">{{ date('d M Y', strtotime($task->tgl_realisasi)) }}</td>
+                            @else
+                                <td class="text-center"></td>
+                            @endif
                             <td class="text-center">{{ $task->nilai }}</td>
-                            <td class="text-center">{{ $task->keterangan }}</td>
+                            @if ($task->keterangan == 'Telah dikonfirmasi')
+                                <td><span
+                                        class="badge rounded-pill text-bg-success text-white">{{ $task->keterangan }}</span>
+                                </td>
+                            @elseif ($task->keterangan == 'Belum dikerjakan')
+                                <td class="text-center">
+                                    <span
+                                        class="badge  rounded-pill text-bg-warning text-white">{{ $task->keterangan }}</span>
+                                </td>
+                            @elseif ($task->keterangan == 'Tunggu Konfirmasi')
+                                <td class="text-center">
+                                    <span class="badge rounded-pill text-bg-info text-white">{{ $task->keterangan }}</span>
+                                </td>
+                            @endif
                             <td class="text-center">
                                 <a href="#" class="edit" data-bs-toggle="modal"><i class="fas fa-square-pen"
                                         data-bs-toggle="modal" title="Edit" style="color: orange;"
@@ -78,7 +96,7 @@
                 <div class="modal-body">
 
                     <!--FORM BUAT PEKERJAAN-->
-                    <form action="" method="post">
+                    <form action="{{ Route('store') }}" method="post">
                         @csrf
                         <div class="container">
 
@@ -138,10 +156,7 @@
                                 <input type="date" class="form-control" id="deadlinee" name="deadline"
                                     placeholder="DD/MM/YYYY" />
                             </div>
-                            <input type="hidden" class="form-control" name="tgl_realisasi" />
-                            <input type="hidden" class="form-control" name="nilai" />
                             <input type="hidden" class="form-control" name="keterangan" />
-                            <input type="hidden" class="form-control" name="file" />
                             <br>
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </div>
@@ -262,6 +277,59 @@
         </div>
     </div>
 
+    <!-- Modal Penilaian -->
+    <div class="modal fade" id="penilaiankerja" tabindex="-1" aria-labelledby="modalTambahBarang" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Penilaian Pekerjaan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <!--FORM BUAT PEKERJAAN-->
+                    <form action="{{ Route('penilaian') }}" method="post">
+                        @csrf
+                        <div class="container">
+                            <div class="form-group col">
+                                <input type="hidden" class="form-control" id="inputidnmr" name="task_id">
+                            </div>
+                            <div class="row">
+                                <div class="form-group col">
+                                    <label for="inputOrang">Nama Pegawai</label>
+                                    <input type="text" class="form-control" id="inputOrang" name="Pegawai" disabled>
+                                </div>
+
+                                <div class="form-group col">
+                                    <label for="inputTugas">Tugas</label>
+                                    <input type="text" class="form-control" id="inputTugas" name="" disabled>
+                                </div>
+
+                                <div class="form-group col">
+                                    <label for="inputTim">Asal</label>
+                                    <input type="text" class="form-control" id="inputTim" name="" disabled>
+                                </div>
+                            </div>
+                            <div class="form-group col">
+                                <br>
+                                <label for="inputTim">Hasil Penugasan</label>
+                                <div class="col dokumen"></div>
+                            </div>
+                            <div class="form-group col">
+                                <label for="inputnilai">Beri Nilai</label>
+                                <input type="text" class="form-control" id="inputnilai" name="nilai">
+                            </div>
+                            <br>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+                    <!--END FORM BUAT PEKERJAAN-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 
     <!-- Menampilkan modal berhasil simpan update -->
     <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel"
@@ -333,6 +401,26 @@
             let key = $(this).attr('data');
             let id = $(`#id${key}`).val();
             $('#inputIdDelete').val(id);
+        });
+
+        $(".fa-circle-info").click(function() {
+            let keyy = $(this).attr('data');
+            let idd = $(`#id${keyy}`).val();
+            let pegawai_idd = $(`#pegawai_id${keyy}`).val();
+            let pegawaii = $(`#Pegawai${keyy}`).text();
+            let namaa = $(`#Nama${keyy}`).text();
+            let asall = $(`#Asal${keyy}`).text();
+            let file = $(`#file${keyy}`).val();
+            console.log(asall);
+
+            $('#inputidnmr').val(idd);
+            $('#inputOrang').val(pegawaii);
+            $('#inputpegawaiidnmr').val(pegawai_idd);
+            $('#inputTugas').val(namaa);
+            $('#inputTim').val(asall);
+            $('.dokumen').html(
+                `<a class ='unduh' href='file/${file}'><button class='btn btn-success'type='button'>Download</button></a>`
+            );
         });
     </script>
 

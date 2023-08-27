@@ -23,8 +23,9 @@ class AdminController extends Controller
     }
 
     public function store(Request $request){
-        $data = $request->all();
+        $data = $request->except('tgl_realisasi');
         $data['keterangan'] = 'Belum dikerjakan';
+        // $data['tgl_realisasi'] = null;
         // Tugas::create($request->all());
     
         $simpan = Tugas::create($data);
@@ -96,6 +97,25 @@ public function delete(Request $request)
         if ($user->role == 'admin') {
             return redirect('admin');
         }
+}
+
+public function penilaian(Request $request){
+    
+    $data = Tugas::find($request->input('task_id'));
+    $data->nilai = $request->input('nilai');
+    $data->keterangan = 'Telah dikonfirmasi';
+    $simpan = $data->save();
+    if ($simpan) {
+        Session::flash('success', 'Nilai berhasil dibuat.');
+    } else {
+        Session::flash('success', 'Nilai gagal dibuat.');
+    }
+
+        
+
+    $user = Auth::user();
+    if($user->role == 'admin')
+    return redirect('admin');
 }
 
 }
