@@ -218,7 +218,7 @@
                 <font color="#000000">Nama </font>
             </td>
             <td align="left" valign=bottom>
-                <font color="#000000">: {{ Session::get('name') }}</font>
+                <font color="#000000">: {{ $tasks[0]->name }}</font>
             </td>
             <td align="left" valign=bottom>
                 <font color="#000000"><br></font>
@@ -852,7 +852,7 @@
         </tr>
         <tr>
             <td colspan=3 height="20" align="center" valign=bottom>
-                <font color="#000000">{{ Session::get('name') }}</font>
+                <font color="#000000">{{ $tasks[0]->name }}</font>
             </td>
             <td align="left" valign=bottom>
                 <font color="#000000"><br></font>
@@ -881,7 +881,7 @@
         </tr>
         <tr>
             <td colspan=3 height="20" align="center" valign=bottom sdval="19847481121" sdnum="1033;">
-                <font color="#000000">19847481121</font>
+                <font color="#000000">{{ $tasks[1]->pegawai_id }}</font>
             </td>
             <td align="left" valign=bottom>
                 <font color="#000000"><br></font>

@@ -420,7 +420,7 @@
                         </div>
                         <br>
 
-                        <button type="submit" name="action" class="btn btn-primary" formaction="/user/ckp-r">CETAK CKP-R</button>
+                        <button type="submit" name="action" class="btn btn-primary" formaction="/admin/ckp-r">CETAK CKP-R</button>
                         <button type="submit" name="action" class="btn btn-primary" formaction="/admin/ckp-t">CETAK CKP-T</button>
                     </form>
 

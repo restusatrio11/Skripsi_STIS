@@ -141,4 +141,18 @@ public function cetakCKPT(Request $request)
     return $pdf->download('CKP-T.pdf');
 }
 
+public function cetakCKPR(Request $request) 
+    {
+        $user_id = $request->input('pegawai_id');
+        $tasks = DB::table('tasks')
+                ->join('users', 'tasks.pegawai_id', '=', 'users.id')
+                ->where('id', '=', $user_id)
+                ->get();
+        // $bulan = $tasks->
+        
+        $pdf = app('dompdf.wrapper');
+        $pdf->loadview('ckp-r', ['tasks'=>$tasks])->setPaper('letter', 'potrait');
+	    return $pdf->download('CKP-R.pdf');
+    }
+
 }

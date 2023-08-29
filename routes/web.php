@@ -29,7 +29,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::get('admin', [AdminController::class, 'index'])->middleware('checkRole:admin');
     Route::get('user', [UserController::class, 'index'])->middleware(['checkRole:user,admin']);
-    Route::get('user/ckp-r', [UserController::class, 'cetakCKPR'])->middleware(['checkRole:user']);
+    Route::get('admin/ckp-r', [AdminController::class, 'cetakCKPR'])->middleware(['checkRole:admin']);
     Route::get('admin/ckp-t', [AdminController::class, 'cetakCKPT'])->middleware(['checkRole:admin']);
     Route::get('visual', [ChartController::class, 'index'])->middleware(['checkRole:user,admin']);
     Route::get('getAvg', [ChartController::class, 'getAvg'])->middleware(['checkRole:user,admin']);

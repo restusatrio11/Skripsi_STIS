@@ -68,7 +68,7 @@
             <td align="left" valign=bottom>
                 <font color="#000000"><br></font>
             </td>
-            <td colspan=4 align="center" valign=bottom><b>
+            <td colspan=2 align="center" valign=bottom><b>
                     <font color="#000000">Target Kinerja Pegawai Tahun 2023</font>
                 </b></td>
             <td align="left" valign=bottom>
@@ -134,9 +134,9 @@
             <td height="20" align="left" valign=bottom>
                 <font color="#000000">Nama</font>
             </td>
-                <td align="left" valign=bottom>
-                    <font color="#000000">: {{ $tasks[0]->name }}</font>
-                </td>
+            <td align="left" valign=bottom>
+                <font color="#000000">: {{ $tasks[0]->name }}</font>
+            </td>
             <td align="left" valign=bottom>
                 <font color="#000000"><br></font>
             </td>
@@ -295,21 +295,22 @@
                     <font color="#000000"></font>
                 </td>
             </tr>
-            <tr>
-                <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
-                    colspan=5 height="20" align="center" valign=middle>
-                    <font color="#000000">Jumlah</font>
-                </td>
-                <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
-                    align="center" valign=middle>
-                    <font color="#000000"><br></font>
-                </td>
-                <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
-                    colspan=2 align="center" valign=middle>
-                    <font color="#000000"><br></font>
-                </td>
-            </tr>
         @endforeach
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan=5 height="20" align="center" valign=middle>
+                <font color="#000000">Jumlah</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign=middle>
+                <font color="#000000"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan=2 align="center" valign=middle>
+                <font color="#000000"><br></font>
+            </td>
+        </tr>
+
         <tr>
             <td height="20" align="left" valign=bottom>
                 <font color="#000000"><br></font>
@@ -418,13 +419,13 @@
             <td height="20" align="left" valign=bottom>
                 <font color="#000000"><br></font>
             </td>
-            <td colspan=3 align="center" valign=middle>
+            <td colspan=1 align="center" valign=middle>
                 <font color="#000000">Pegawai yang dinilai</font>
             </td>
             <td align="left" valign=bottom>
                 <font color="#000000"><br></font>
             </td>
-            <td colspan=3 align="center" valign=bottom>
+            <td colspan=5 align="center" valign=bottom>
                 <font color="#000000">Pejabat Penilai</font>
             </td>
         </tr>
@@ -536,13 +537,13 @@
             <td height="20" align="left" valign=bottom>
                 <font color="#000000"><br></font>
             </td>
-            <td colspan=3 align="center" valign=bottom>
-                <font color="#000000">Alfiah</font>
+            <td colspan=1 align="center" valign=bottom>
+                <font color="#000000">{{ $tasks[0]->name }}</font>
             </td>
             <td align="left" valign=bottom>
                 <font color="#000000"><br></font>
             </td>
-            <td colspan=3 align="center" valign=bottom>
+            <td colspan=5 align="center" valign=bottom>
                 <font color="#000000">Rudi Cahyono, S.ST, M.Si</font>
             </td>
         </tr>
@@ -550,13 +551,13 @@
             <td height="20" align="left" valign=bottom>
                 <font color="#000000"><br></font>
             </td>
-            <td colspan=3 align="center" valign=bottom sdval="1988374913139830" sdnum="1033;0;0">
-                <font color="#000000">1988374913139830</font>
+            <td colspan=1 align="center" valign=bottom sdval="1988374913139830" sdnum="1033;0;0">
+                <font color="#000000">{{ $tasks[1]->pegawai_id }}</font>
             </td>
             <td align="left" valign=bottom>
                 <font color="#000000"><br></font>
             </td>
-            <td colspan=3 align="center" valign=middle sdval="192812921821" sdnum="1033;0;0">
+            <td colspan=5 align="center" valign=middle sdval="192812921821" sdnum="1033;0;0">
                 <font color="#000000">192812921821</font>
             </td>
         </tr>
