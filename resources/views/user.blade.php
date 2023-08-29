@@ -2,11 +2,12 @@
 
 @section('content')
     <div class="container">
+        <a href="/user/ckp-r" class="btn btn-primary mb-3" target="_blank">CETAK CKP-R</a>
         <div class="row mb-3">
             <div class="col-sm-3">
                 <div class="form-group">
                     <label>Bulan Deadline</label>
-                    <select class="form-select" id="bulandl" oninput="filterDL()">
+                    <select class="form-select" id="bulandl" oninput="filter()">
                         <option>Semua</option>
                         <option value="Jan">Januari</option>
                         <option value="Feb">Februari</option>
@@ -26,7 +27,7 @@
             <div class="col-sm-3">
                 <div class="form-group">
                     <label>Tahun Deadline</label>
-                    <select class="form-select" id="tahundl" oninput="filterDL()">
+                    <select class="form-select" id="tahundl" oninput="filter()">
                         <option>Semua</option>
                         <option>2021</option>
                         <option>2022</option>
@@ -37,7 +38,7 @@
             <div class="col-sm-3">
                 <div class="form-group">
                     <label>Bulan Realisasi</label>
-                    <select class="form-select" id="bulanreal" oninput="filterRealisasi()">
+                    <select class="form-select" id="bulanreal" oninput="filter()">
                         <option>Semua</option>
                         <option value="Jan">Januari</option>
                         <option value="Feb">Februari</option>
@@ -57,7 +58,7 @@
             <div class="col-sm-3">
                 <div class="form-group">
                     <label>Tahun Realisasi</label>
-                    <select class="form-select" id="tahunreal" oninput="filterRealisasi()">
+                    <select class="form-select" id="tahunreal" oninput="filter()">
                         <option>Semua</option>
                         <option>2021</option>
                         <option>2022</option>
@@ -70,7 +71,7 @@
             <table id="dtBasicExample" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
                 <thead>
                     <tr class="filters">
-                        <th><input type="text" class="form-control" placeholder="No" disabled></th>
+                        {{-- <th><input type="text" class="form-control" placeholder="No" disabled></th>
                         <th><input type="text" class="form-control" placeholder="Nama" disabled></th>
                         <th><input type="text" class="form-control" placeholder="Asal" disabled></th>
                         <th><input type="text" class="form-control" placeholder="Target" disabled></th>
@@ -80,7 +81,22 @@
                         <th><input type="text" class="form-control" placeholder="Tgl Realisasi" disabled></th>
                         <th><input type="text" class="form-control" placeholder="File" disabled></th>
                         <th><input type="text" class="form-control" placeholder="Nilai" disabled></th>
-                        <th><input type="text" class="form-control" placeholder="Keterangan" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Keterangan" disabled></th> --}}
+                        {{-- <thead> --}}
+                        <th class="text-center">No</th>
+                        {{-- <th class="text-center">ID Pegawai</th> --}}
+                        <th class="text-center">Tugas</th>
+                        <th class="text-center">Asal</th>
+                        <th class="text-center">Target</th>
+                        <th class="text-center">Realisasi</th>
+                        <th class="text-center">Satuan</th>
+                        <th class="text-center">Deadline</th>
+                        <th class="text-center">Tgl Realisasi</th>
+                        <th class="text-center">File</th>
+                        <th class="text-center">Nilai</th>
+                        <th class="text-center">Keterangan</th>
+
+                        {{-- </thead> --}}
                     </tr>
                 </thead>
                 <tbody>
@@ -97,9 +113,9 @@
                             <td>{{ $task->satuan }}</td>
                             <td>{{ date('d M Y', strtotime($task->deadline)) }}</td>
                             @if ($task->tgl_realisasi != null)
-                                <td class="text-center">{{ date('d M Y', strtotime($task->tgl_realisasi)) }}</td>
+                                <td class="text-center tgr">{{ date('d M Y', strtotime($task->tgl_realisasi)) }}</td>
                             @else
-                                <td class="text-center"></td>
+                                <td class="text-center tgr"></td>
                             @endif
                             <td>
                                 @if ($task->file != null)
@@ -110,7 +126,20 @@
                                 @endif
                             </td>
                             <td>{{ $task->nilai }}</td>
-                            <td>{{ $task->keterangan }}</td>
+                            @if ($task->keterangan == 'Telah dikonfirmasi')
+                                <td><span
+                                        class="badge rounded-pill text-bg-success text-white">{{ $task->keterangan }}</span>
+                                </td>
+                            @elseif ($task->keterangan == 'Belum dikerjakan')
+                                <td class="text-center">
+                                    <span
+                                        class="badge  rounded-pill text-bg-warning text-white">{{ $task->keterangan }}</span>
+                                </td>
+                            @elseif ($task->keterangan == 'Tunggu Konfirmasi')
+                                <td class="text-center">
+                                    <span class="badge rounded-pill text-bg-info text-white">{{ $task->keterangan }}</span>
+                                </td>
+                            @endif
                         </tr>
                     @endforeach
 
@@ -160,7 +189,7 @@
                             <input type="file" class="form-control" id="file" name="file">
                         </div>
                         <br>
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        {{-- <button type="submit" class="btn btn-primary">Submit</button> --}}
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -218,43 +247,62 @@
             $('#tgl_realisasi').val(tgl_realisasi);
         });
 
-        function filterDL() {
-            let dropdownbulan, table, rows, cells, dl, filterbulan, dropdowntahun, filtertahun;
-            dropdownbulan = $('#bulandl');
-            dropdowntahun = $('#tahundl');
+        function filter() {
+            let dropdownbulanreal, table, rows, cells,
+                dl, real, filterbulanreal, dropdowntahunreal, filtertahunreal,
+                dropdownbulandl, dropdowntahundl, filterbulandl, filtertahundl;
+            dropdownbulanreal = $('#bulanreal');
+            dropdowntahunreal = $('#tahunreal');
+            dropdownbulandl = $('#bulandl');
+            dropdowntahundl = $('#tahundl');
             table = document.getElementById("dtBasicExample");
             rows = table.getElementsByTagName("tr");
-            filterbulan = dropdownbulan.val();
-            filtertahun = dropdowntahun.val();
+            filterbulanreal = dropdownbulanreal.val();
+            filtertahunreal = dropdowntahunreal.val();
+            filterbulandl = dropdownbulandl.val();
+            filtertahundl = dropdowntahundl.val();
             for (let row of rows) {
                 cells = row.getElementsByTagName("td");
                 dl = cells[6] || null;
-                if ((filterbulan === "Semua" && filtertahun === "Semua") || !dl ||
-                    (filterbulan === dl.textContent.substring(3, 6) && filtertahun === dl.textContent.substring(7, 11)) ||
-                    (filterbulan === dl.textContent.substring(3, 6) && filtertahun === "Semua") ||
-                    (filterbulan === "Semua" && filtertahun === dl.textContent.substring(7, 11))) {
-                    row.style.display = ""; // shows this row
-                } else {
-                    row.style.display = "none"; // hides this row
-                }
-            }
-        }
-
-        function filterRealisasi() {
-            let dropdownbulan, table, rows, cells, dl, filterbulan, dropdowntahun, filtertahun;
-            dropdownbulan = $('#bulanreal');
-            dropdowntahun = $('#tahunreal');
-            table = document.getElementById("dtBasicExample");
-            rows = table.getElementsByTagName("tr");
-            filterbulan = dropdownbulan.val();
-            filtertahun = dropdowntahun.val();
-            for (let row of rows) {
-                cells = row.getElementsByTagName("td");
-                dl = cells[7] || null;
-                if ((filterbulan === "Semua" && filtertahun === "Semua") || !dl ||
-                    (filterbulan === dl.textContent.substring(3, 6) && filtertahun === dl.textContent.substring(7, 11)) ||
-                    (filterbulan === dl.textContent.substring(3, 6) && filtertahun === "Semua") ||
-                    (filterbulan === "Semua" && filtertahun === dl.textContent.substring(7, 11))) {
+                real = cells[7] || null;
+                if (
+                    (filterbulanreal === "Semua" && filtertahunreal === "Semua" && filterbulandl === "Semua" &&
+                        filtertahundl === "Semua") ||
+                    !dl ||
+                    (filterbulanreal === "Semua" && filtertahunreal === "Semua" && filterbulandl === "Semua" &&
+                        filtertahundl === dl.textContent.substring(7, 11)) ||
+                    (filterbulanreal === "Semua" && filtertahunreal === "Semua" && filterbulandl === dl.textContent
+                        .substring(3, 6) && filtertahundl === "Semua") ||
+                    (filterbulanreal === "Semua" && filtertahunreal === "Semua" && filterbulandl === dl.textContent
+                        .substring(3, 6) && filtertahundl === dl.textContent.substring(7, 11)) ||
+                    (filterbulanreal === "Semua" && filtertahunreal === real.textContent.substring(7, 11) &&
+                        filterbulandl === "Semua" && filtertahundl === "Semua") ||
+                    (filterbulanreal === "Semua" && filtertahunreal === real.textContent.substring(7, 11) &&
+                        filterbulandl === "Semua" && filtertahundl === dl.textContent.substring(7, 11)) ||
+                    (filterbulanreal === "Semua" && filtertahunreal === real.textContent.substring(7, 11) &&
+                        filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === "Semua") ||
+                    (filterbulanreal === "Semua" && filtertahunreal === real.textContent.substring(7, 11) &&
+                        filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === dl.textContent.substring(7,
+                            11)) ||
+                    (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === "Semua" &&
+                        filterbulandl === "Semua" && filtertahundl === "Semua") ||
+                    (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === "Semua" &&
+                        filterbulandl === "Semua" && filtertahundl === dl.textContent.substring(7, 11)) ||
+                    (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === "Semua" &&
+                        filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === "Semua") ||
+                    (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === "Semua" &&
+                        filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === dl.textContent.substring(7,
+                            11)) ||
+                    (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === real.textContent.substring(
+                        7, 11) && filterbulandl === "Semua" && filtertahundl === "Semua") ||
+                    (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === real.textContent.substring(
+                        7, 11) && filterbulandl === "Semua" && filtertahundl === dl.textContent.substring(7, 11)) ||
+                    (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === real.textContent.substring(
+                        7, 11) && filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === "Semua") ||
+                    (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === real.textContent.substring(
+                            7, 11) && filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === dl.textContent
+                        .substring(7, 11))
+                ) {
                     row.style.display = ""; // shows this row
                 } else {
                     row.style.display = "none"; // hides this row

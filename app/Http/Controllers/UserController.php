@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Tugas;
 use App\Http\Requests;
+use Barryvdh\DomPDF\PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -45,5 +46,19 @@ class UserController extends Controller
         $user = Auth::user();
         if ($user->role == 'admin') return redirect('admin');
         else return redirect('user');
+    }
+
+    public function cetakCKPR() 
+    {
+        $user_id = Session::get('id');
+        $tasks = DB::table('tasks')
+                ->join('users', 'tasks.pegawai_id', '=', 'users.id')
+                ->where('pegawai_id', '=', $user_id)
+                ->get();
+        // $bulan = $tasks->
+        
+        $pdf = app('dompdf.wrapper');
+        $pdf->loadview('ckp-r', ['tasks'=>$tasks])->setPaper('letter', 'potrait');
+	    return $pdf->download('CKP-R.pdf');
     }
 }

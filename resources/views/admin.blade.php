@@ -2,6 +2,72 @@
 
 @section('content')
     <div class="container">
+        <div class="row mb-3">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label>Bulan Deadline</label>
+                    <select class="form-select" id="bulandl" oninput="filter()">
+                        <option>Semua</option>
+                        <option value="Jan">Januari</option>
+                        <option value="Feb">Februari</option>
+                        <option value="Mar">Maret</option>
+                        <option value="Apr">April</option>
+                        <option value="May">Mei</option>
+                        <option value="Jun">Juni</option>
+                        <option value="Jul">Juli</option>
+                        <option value="Aug">Agustus</option>
+                        <option value="Sep">September</option>
+                        <option value="Oct">Oktober</option>
+                        <option value="Nov">November</option>
+                        <option value="Dec">Desember</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label>Tahun Deadline</label>
+                    <select class="form-select" id="tahundl" oninput="filter()">
+                        <option>Semua</option>
+                        <option>2021</option>
+                        <option>2022</option>
+                        <option>2023</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label>Bulan Realisasi</label>
+                    <select class="form-select" id="bulanreal" oninput="filter()">
+                        <option>Semua</option>
+                        <option value="Jan">Januari</option>
+                        <option value="Feb">Februari</option>
+                        <option value="Mar">Maret</option>
+                        <option value="Apr">April</option>
+                        <option value="May">Mei</option>
+                        <option value="Jun">Juni</option>
+                        <option value="Jul">Juli</option>
+                        <option value="Aug">Agustus</option>
+                        <option value="Sep">September</option>
+                        <option value="Oct">Oktober</option>
+                        <option value="Nov">November</option>
+                        <option value="Dec">Desember</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label>Tahun Realisasi</label>
+                    <select class="form-select" id="tahunreal" oninput="filter()">
+                        <option>Semua</option>
+                        <option>2021</option>
+                        <option>2022</option>
+                        <option>2023</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <br>
+
         <br>
         <div class="table-responsive-xl">
             <table id="dtBasicExample" class="table table-striped table-bordered table-sm">
@@ -15,12 +81,10 @@
                     <th class="text-center">Realisasi</th>
                     <th class="text-center">Satuan</th>
                     <th class="text-center">Deadline</th>
-                    <th class="text-center">Tgl Realisasi
-                    </th>
+                    <th class="text-center">Tgl Realisasi</th>
                     <th class="text-center">Nilai</th>
                     <th class="text-center">Keterangan</th>
                     <th class="text-center">Aksi</th>
-                    </tr>
                 </thead>
                 <tbody>
                     @foreach ($tasks as $key => $task)
@@ -36,12 +100,12 @@
                             <td class="text-center" id="Target{{ $key }}">{{ $task->target }}</td>
                             <td class="text-center" id="Realisasi{{ $key }}">{{ $task->realisasi }}</td>
                             <td class="text-center" id="Satuan{{ $key }}">{{ $task->satuan }}</td>
-                            <td class="text-center" id="Deadline{{ $key }}" data-value="{{ $task->deadline }}">
-                                {{ date('d M Y', strtotime($task->deadline)) }}</td>
+                            <td class="text-center tgd" id="Deadline{{ $key }}"
+                                data-value="{{ $task->deadline }}">{{ date('d M Y', strtotime($task->deadline)) }}</td>
                             @if ($task->tgl_realisasi != null)
-                                <td class="text-center">{{ date('d M Y', strtotime($task->tgl_realisasi)) }}</td>
+                                <td class="text-center tgr">{{ date('d M Y', strtotime($task->tgl_realisasi)) }}</td>
                             @else
-                                <td class="text-center"></td>
+                                <td class="text-center tgr"></td>
                             @endif
                             <td class="text-center">{{ $task->nilai }}</td>
                             @if ($task->keterangan == 'Telah dikonfirmasi')
@@ -255,14 +319,14 @@
 
     <!-- Modal Delete -->
     <div class="modal fade" id="deletekerja" tabindex="-1" aria-labelledby="modaldeleteBarang" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-sm">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Hapus Pekerjaan</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-
+                    <p>Apakah Kamu Yakin Ingin Menghapus ?</p>
                     <!--FORM BUAT PEKERJAAN-->
                     <form action="{{ route('delete') }}" method="post">
                         @csrf
@@ -329,6 +393,41 @@
         </div>
     </div>
 
+    <!-- Modal Cetak CKP -->
+    <div class="modal fade" id="ckpkerja" tabindex="-1" aria-labelledby="modalcetakckp" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cetak CKP Pekerjaan</h5>
+                </div>
+                <div class="modal-body">
+                    {{-- <div class="form-group col">
+                        <input type="hidden" class="form-control" id="inputIdcetak" name="id">
+                    </div> --}}
+                    <div class="form-group">
+                        <label for="inputPegawai">Nama Pegawai</label>
+                        <div>
+
+                            <select name="pegawai_id" class="selectpicker form-control" data-live-search="true"
+                                id="inputcetakpegawai_id">
+                                @foreach ($pegawai as $pegawaibps)
+                                    <option value="{{ $pegawaibps->id }}">{{ $pegawaibps->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <br>
+
+                    <a href="/user/ckp-r" role="button" class="btn btn-primary" target="_blank">CETAK CKP-R</a>
+                    <a href="/admin/ckp-t" role="button" class="btn btn-primary" target="_blank">CETAK CKP-T</a>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
 
 
     <!-- Menampilkan modal berhasil simpan update -->
@@ -373,19 +472,6 @@
             let satuan = $(`#Satuan${key}`).text();
             let deadline = $(`#Deadline${key}`).data('value');
 
-            // Mengambil nilai deadline dalam format YYYY-MM-DD
-            // console.log(`#Deadline${key}`);
-
-            // Konversi format tanggal sesuai kebutuhan, misalnya menjadi "DD-MM-YYYY"
-            // let formattedDeadline = ""; // Default jika tidak ada nilai
-
-            // if (deadline) {
-            //     const parts = deadline.split('-');
-            //     if (parts.length === 3) {
-            //         formattedDeadline = `${parts[2]}/${parts[1]}/${parts[0]}`;
-            //     }
-            // }
-
             $('#inputId').val(id);
             $('#inputPegawai').val(pegawai_id);
             $('#inputpegawai_id').val(pegawai_id);
@@ -402,6 +488,14 @@
             let id = $(`#id${key}`).val();
             $('#inputIdDelete').val(id);
         });
+
+        // $("#cetak").click(function() {
+        //     let key = $(this).attr('data');
+        //     let id = $(`#id${key}`).val();
+        //     let pegawai_id = $(`#pegawai_id${key}`).val();
+        //     $('#inputIdcetak').val(id);
+        //     $('#inputcetakpegawai_id').val(id);
+        // });
 
         $(".fa-circle-info").click(function() {
             let keyy = $(this).attr('data');
@@ -422,6 +516,69 @@
                 `<a class ='unduh' href='file/${file}'><button class='btn btn-success'type='button'>Download</button></a>`
             );
         });
+
+        function filter() {
+            let dropdownbulanreal, table, rows, cells,
+                dl, real, filterbulanreal, dropdowntahunreal, filtertahunreal,
+                dropdownbulandl, dropdowntahundl, filterbulandl, filtertahundl;
+            dropdownbulanreal = $('#bulanreal');
+            dropdowntahunreal = $('#tahunreal');
+            dropdownbulandl = $('#bulandl');
+            dropdowntahundl = $('#tahundl');
+            table = document.getElementById("dtBasicExample");
+            rows = table.getElementsByTagName("tr");
+            filterbulanreal = dropdownbulanreal.val();
+            filtertahunreal = dropdowntahunreal.val();
+            filterbulandl = dropdownbulandl.val();
+            filtertahundl = dropdowntahundl.val();
+            for (let row of rows) {
+                cells = row.getElementsByTagName("td");
+                dl = cells[7] || null;
+                real = cells[8] || null;
+                if (
+                    (filterbulanreal === "Semua" && filtertahunreal === "Semua" && filterbulandl === "Semua" &&
+                        filtertahundl === "Semua") ||
+                    !dl ||
+                    (filterbulanreal === "Semua" && filtertahunreal === "Semua" && filterbulandl === "Semua" &&
+                        filtertahundl === dl.textContent.substring(7, 11)) ||
+                    (filterbulanreal === "Semua" && filtertahunreal === "Semua" && filterbulandl === dl.textContent
+                        .substring(3, 6) && filtertahundl === "Semua") ||
+                    (filterbulanreal === "Semua" && filtertahunreal === "Semua" && filterbulandl === dl.textContent
+                        .substring(3, 6) && filtertahundl === dl.textContent.substring(7, 11)) ||
+                    (filterbulanreal === "Semua" && filtertahunreal === real.textContent.substring(7, 11) &&
+                        filterbulandl === "Semua" && filtertahundl === "Semua") ||
+                    (filterbulanreal === "Semua" && filtertahunreal === real.textContent.substring(7, 11) &&
+                        filterbulandl === "Semua" && filtertahundl === dl.textContent.substring(7, 11)) ||
+                    (filterbulanreal === "Semua" && filtertahunreal === real.textContent.substring(7, 11) &&
+                        filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === "Semua") ||
+                    (filterbulanreal === "Semua" && filtertahunreal === real.textContent.substring(7, 11) &&
+                        filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === dl.textContent.substring(7,
+                            11)) ||
+                    (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === "Semua" &&
+                        filterbulandl === "Semua" && filtertahundl === "Semua") ||
+                    (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === "Semua" &&
+                        filterbulandl === "Semua" && filtertahundl === dl.textContent.substring(7, 11)) ||
+                    (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === "Semua" &&
+                        filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === "Semua") ||
+                    (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === "Semua" &&
+                        filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === dl.textContent.substring(7,
+                            11)) ||
+                    (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === real.textContent.substring(
+                        7, 11) && filterbulandl === "Semua" && filtertahundl === "Semua") ||
+                    (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === real.textContent.substring(
+                        7, 11) && filterbulandl === "Semua" && filtertahundl === dl.textContent.substring(7, 11)) ||
+                    (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === real.textContent.substring(
+                        7, 11) && filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === "Semua") ||
+                    (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === real.textContent.substring(
+                            7, 11) && filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === dl.textContent
+                        .substring(7, 11))
+                ) {
+                    row.style.display = ""; // shows this row
+                } else {
+                    row.style.display = "none"; // hides this row
+                }
+            }
+        }
     </script>
 
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">

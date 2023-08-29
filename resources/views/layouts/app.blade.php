@@ -34,6 +34,7 @@
 </head>
 
 <body>
+
     <div id="app">
         <nav class="navbar navbar-expand-lg navbar-light shadow-sm " style="background-color: white;">
             <div class="container">
@@ -63,6 +64,8 @@
                                 <a class="nav-item nav-link" href="#">Progress</a>
                                 <a class="nav-item nav-link" href="#" data-bs-toggle="modal"
                                     data-bs-target="#tambahkerja">Buat Pekerjaan</a>
+                                <a class="nav-item nav-link" href="#" data-bs-toggle="modal"
+                                    data-bs-target="#ckpkerja" id="cetak">Cetak CKP</a>
                             @elseif (Auth::check() && Auth::user()->role == 'user')
                                 <a class="nav-item nav-link active" href="#">Home</a>
                                 <a class="nav-item nav-link" href="#">Progress</a>
@@ -115,10 +118,8 @@
         </main>
 
         <script type="text/javascript" src="\build\assets\admin.js"></script>
+
     </div>
-
-
-
 </body>
 
 </html>

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 use App\Models\Tugas;
+use PDF;
 
 class AdminController extends Controller
 
@@ -30,9 +31,9 @@ class AdminController extends Controller
     
         $simpan = Tugas::create($data);
         if ($simpan) {
-            Session::flash('success', 'Data berhasil dibuat.');
+            Session::flash('success', 'Tugas berhasil dibuat.');
         } else {
-            Session::flash('success', 'Data gagal dibuat.');
+            Session::flash('success', 'Tugas gagal dibuat.');
         }
 
         $user = Auth::user();
@@ -63,9 +64,9 @@ class AdminController extends Controller
 
     
     if ($simpan) {
-        Session::flash('success', 'Data berhasil diupdate.');
+        Session::flash('success', 'Tugas berhasil diupdate.');
     } else {
-        Session::flash('success', 'Data gagal diupdate.');
+        Session::flash('success', 'Tugas gagal diupdate.');
     }
 
     $user = Auth::user();
@@ -81,16 +82,16 @@ public function delete(Request $request)
 
         $data = Tugas::find($id);
         if (!$data) {
-            Session::flash('error', 'Data tidak ditemukan.');
+            Session::flash('error', 'Tugas tidak ditemukan.');
             return redirect('admin');
         }
 
         $delete = $data->delete();
 
         if ($delete) {
-            Session::flash('success', 'Data berhasil dihapus.');
+            Session::flash('success', 'Tugas berhasil dihapus.');
         } else {
-            Session::flash('error', 'Data gagal dihapus.');
+            Session::flash('error', 'Tugas gagal dihapus.');
         }
 
         $user = Auth::user();
@@ -116,6 +117,28 @@ public function penilaian(Request $request){
     $user = Auth::user();
     if($user->role == 'admin')
     return redirect('admin');
+}
+
+public function cetak_pdf(Request $request){
+    $tasks = DB::table('tasks')->join('users','tasks.pegawai_id','=','users.id')->get();
+    $data = Tugas::find($request->input('task_id'));
+
+    $pdf = PDF::loadview('layout_ckp',['tasks'=>$tasks]);
+    return $pdf->download('laporan-pegawai-pdf');
+}
+
+public function cetakCKPT(Request $request) 
+{
+    $user_id = Tugas::find($request->input('pegawai_id'));
+    $tasks = DB::table('tasks')
+            ->join('users', 'tasks.pegawai_id', '=', 'users.id')
+            ->where('id', '=', $user_id)
+            ->get();
+    // $bulan = $tasks->
+    
+    $pdf = app('dompdf.wrapper');
+    $pdf->loadview('ckp-t', ['tasks'=>$tasks])->setPaper('letter', 'potrait');
+    return $pdf->download('CKP-T.pdf');
 }
 
 }
