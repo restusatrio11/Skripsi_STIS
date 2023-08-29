@@ -404,23 +404,25 @@
                     {{-- <div class="form-group col">
                         <input type="hidden" class="form-control" id="inputIdcetak" name="id">
                     </div> --}}
-                    <div class="form-group">
-                        <label for="inputPegawai">Nama Pegawai</label>
-                        <div>
+                    <form>
+                        <div class="form-group">
+                            <label for="inputPegawai">Nama Pegawai</label>
+                            <div>
 
-                            <select name="pegawai_id" class="selectpicker form-control" data-live-search="true"
-                                id="inputcetakpegawai_id">
-                                @foreach ($pegawai as $pegawaibps)
-                                    <option value="{{ $pegawaibps->id }}">{{ $pegawaibps->name }}
-                                    </option>
-                                @endforeach
-                            </select>
+                                <select name="pegawai_id" class="selectpicker form-control" data-live-search="true"
+                                    id="inputcetakpegawai_id">
+                                    @foreach ($pegawai as $pegawaibps)
+                                        <option value="{{ $pegawaibps->id }}">{{ $pegawaibps->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <br>
+                        <br>
 
-                    <a href="/user/ckp-r" role="button" class="btn btn-primary" target="_blank">CETAK CKP-R</a>
-                    <a href="/admin/ckp-t" role="button" class="btn btn-primary" target="_blank">CETAK CKP-T</a>
+                        <button type="submit" name="action" class="btn btn-primary" formaction="/user/ckp-r">CETAK CKP-R</button>
+                        <button type="submit" name="action" class="btn btn-primary" formaction="/admin/ckp-t">CETAK CKP-T</button>
+                    </form>
 
 
                 </div>
@@ -460,6 +462,22 @@
     @endif
 
     <script>
+        $("#ckpt").click(function() {
+            $.ajax({
+                url: "/admin/ckp-t",
+                type: "get", //send it through get method
+                data: { 
+                    
+                },
+                success: function(response) {
+                    //Do Something
+                },
+                error: function(xhr) {
+                    //Do Something to handle error
+                }
+            });
+        });
+
         $(".fa-square-pen").click(function() {
             let key = $(this).attr('data');
             let id = $(`#id${key}`).val();

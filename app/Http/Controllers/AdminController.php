@@ -119,17 +119,17 @@ public function penilaian(Request $request){
     return redirect('admin');
 }
 
-public function cetak_pdf(Request $request){
-    $tasks = DB::table('tasks')->join('users','tasks.pegawai_id','=','users.id')->get();
-    $data = Tugas::find($request->input('task_id'));
+// public function cetak_pdf(Request $request){
+//     $tasks = DB::table('tasks')->join('users','tasks.pegawai_id','=','users.id')->get();
+//     $data = Tugas::find($request->input('task_id'));
 
-    $pdf = PDF::loadview('layout_ckp',['tasks'=>$tasks]);
-    return $pdf->download('laporan-pegawai-pdf');
-}
+//     $pdf = PDF::loadview('layout_ckp',['tasks'=>$tasks]);
+//     return $pdf->download('laporan-pegawai-pdf');
+// }
 
 public function cetakCKPT(Request $request) 
 {
-    $user_id = Tugas::find($request->input('pegawai_id'));
+    $user_id = $request->input('pegawai_id');
     $tasks = DB::table('tasks')
             ->join('users', 'tasks.pegawai_id', '=', 'users.id')
             ->where('id', '=', $user_id)

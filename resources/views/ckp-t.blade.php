@@ -134,11 +134,9 @@
             <td height="20" align="left" valign=bottom>
                 <font color="#000000">Nama</font>
             </td>
-            @foreach ($tasks as $pegawai)
                 <td align="left" valign=bottom>
-                    <font color="#000000">:{{ $pegawai->name }}</font>
+                    <font color="#000000">: {{ $tasks[0]->name }}</font>
                 </td>
-            @endforeach
             <td align="left" valign=bottom>
                 <font color="#000000"><br></font>
             </td>
