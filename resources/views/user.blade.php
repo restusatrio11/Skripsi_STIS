@@ -189,13 +189,13 @@
                             <input type="file" class="form-control" id="file" name="file">
                         </div>
                         <br>
-                        {{-- <button type="submit" class="btn btn-primary">Submit</button> --}}
+                        <button type="submit" class="btn btn-primary">Submit</button>
                     </form>
                 </div>
-                <div class="modal-footer">
+                {{-- <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>
