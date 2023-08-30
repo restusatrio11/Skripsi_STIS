@@ -33,15 +33,16 @@
 
 </head>
 
-<body>
+<body style="background: #DDE9F5">
 
     <div id="app">
-        <nav class="navbar navbar-expand-lg navbar-light shadow-sm " style="background-color: white;">
+        <nav class="navbar navbar-expand-lg navbar-light shadow-sm " style="background-color: #ffffff;">
             <div class="container">
                 <div class="row">
                     <div class="col-md-8">
-                        <a class="navbar-brand" href="{{ url('home') }}" style="font-size: 25px;"><img
-                                src="\images\BPS.png" alt="Logo" class="logo" style="max-width: 10%;">
+                        <a class="navbar-brand fw-bold" href="{{ url('home') }}"
+                            style="font-size: 25px; color:#043277;"><img src="\images\BPS.png" alt="Logo"
+                                class="logo" style="max-width: 10%;">
                             {{ config('app.name', 'Laravel') }}
                         </a>
                     </div>
@@ -58,14 +59,14 @@
                     </ul>
 
                     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                        <div class="navbar-nav mx-auto">
+                        <div class="navbar-nav mx-auto" style="color: #043277">
                             @if (Auth::check() && Auth::user()->role == 'admin')
-                                <a class="nav-item nav-link active" href="#">Home</a>
-                                <a class="nav-item nav-link" href="#">Progress</a>
+                                <a class="nav-item nav-link active" href="#" style="color: #043277">Home</a>
+                                <a class="nav-item nav-link" href="#" style="color: #043277">Progress</a>
                                 <a class="nav-item nav-link" href="#" data-bs-toggle="modal"
-                                    data-bs-target="#tambahkerja">Buat Pekerjaan</a>
+                                    data-bs-target="#tambahkerja" style="color: #043277">Tugaskan</a>
                                 <a class="nav-item nav-link" href="#" data-bs-toggle="modal"
-                                    data-bs-target="#ckpkerja" id="cetak">Cetak CKP</a>
+                                    data-bs-target="#ckpkerja" id="cetak" style="color: #043277">CKP</a>
                             @elseif (Auth::check() && Auth::user()->role == 'user')
                                 <a class="nav-item nav-link active" href="#">Home</a>
                                 <a class="nav-item nav-link" href="#">Progress</a>

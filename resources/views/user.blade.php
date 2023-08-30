@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <a href="/user/ckp-r" class="btn btn-primary mb-3" target="_blank">CETAK CKP-R</a>
+        {{-- <a href="/user/ckp-r" class="btn btn-primary mb-3" target="_blank">CETAK CKP-R</a> --}}
         <div class="row mb-3">
             <div class="col-sm-3">
                 <div class="form-group">
