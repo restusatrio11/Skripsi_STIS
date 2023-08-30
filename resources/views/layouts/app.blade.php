@@ -61,15 +61,15 @@
                     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                         <div class="navbar-nav mx-auto" style="color: #043277">
                             @if (Auth::check() && Auth::user()->role == 'admin')
-                                <a class="nav-item nav-link active" href="#" style="color: #043277">Home</a>
-                                <a class="nav-item nav-link" href="#" style="color: #043277">Progress</a>
+                                <a class="nav-item nav-link active" href="/visual" style="color: #043277">Home</a>
+                                <a class="nav-item nav-link" href="/admin" style="color: #043277">Progress</a>
                                 <a class="nav-item nav-link" href="#" data-bs-toggle="modal"
                                     data-bs-target="#tambahkerja" style="color: #043277">Tugaskan</a>
                                 <a class="nav-item nav-link" href="#" data-bs-toggle="modal"
                                     data-bs-target="#ckpkerja" id="cetak" style="color: #043277">CKP</a>
                             @elseif (Auth::check() && Auth::user()->role == 'user')
-                                <a class="nav-item nav-link active" href="#">Home</a>
-                                <a class="nav-item nav-link" href="#">Progress</a>
+                                <a class="nav-item nav-link active" href="/visual">Home</a>
+                                <a class="nav-item nav-link" href="/user">Progress</a>
                             @elseif (Auth::check() && Auth::user()->role == null)
                                 <div></div>
                             @endif

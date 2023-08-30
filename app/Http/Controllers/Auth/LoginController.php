@@ -58,8 +58,8 @@ class LoginController extends Controller
             $request->session()->put('name', $user->name);
             $request->session()->put('role', $user->role);
 
-            if ($user->role == 'admin') return redirect()->intended('admin');
-            else return redirect()->intended('home');
+            if ($user->role == 'admin') return redirect()->intended('visual');
+            else return redirect()->intended('visual');
         }
 
         // Jika otentikasi gagal
