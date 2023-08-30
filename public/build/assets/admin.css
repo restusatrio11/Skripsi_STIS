@@ -40,4 +40,13 @@
         font-family: 'Cambria';
         /* gaya lainnya */
     }
+
+    .visual {
+        background-color: white;
+        padding: 20px; /* tambahkan padding sesuai kebutuhan */
+    }
     
+    .visual-container {
+        width: 100%;
+        overflow-x: auto;
+    }

@@ -32,7 +32,7 @@ $.ajax({
                         font: {
                             size: 20,
                         },
-                        padding: 30
+                        padding: 5
                     },
                     legend: {
                         display: false,

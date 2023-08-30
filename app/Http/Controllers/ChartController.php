@@ -14,7 +14,10 @@ class ChartController extends Controller
 {
     public function index()
     {
-        return view('visual');
+        $tasks = DB::table('tasks')->join('users','tasks.pegawai_id','=','users.id')->get();
+        $pegawai = DB::table('users')->where('role', '=', 'user')->get();
+        return view('visual', ['tasks' => $tasks,'pegawai' => $pegawai]);
+        // return view('visual');
     }
 
     public function getAvg()

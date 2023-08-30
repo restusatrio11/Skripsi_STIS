@@ -153,7 +153,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Upload Pekerjaan</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -176,12 +176,12 @@
                             <label for="realisasi" class="form-label">Realisasi</label>
                             <input type="text" class="form-control" id="realisasi" disabled>
                         </div>
-                        <div class="mb-3">
+                        {{-- <div class="mb-3">
                             <label for="tgl_realisasi" class="form-label">Tanggal Realisasi</label>
                             <input type="text" class="form-control" id="tgl_realisasi" name="tgl_realisasi" disabled>
-                        </div>
+                        </div> --}}
                         <div class="mb-3">
-                            <label for="update" class="form-label">Update Realisasi</label>
+                            <label for="update" class="form-label">Tanggal Realisasi</label>
                             <input type="date" class="form-control" id="update" name="update">
                         </div>
                         <div class="mb-3">
