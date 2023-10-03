@@ -42,7 +42,7 @@
                 <div class="col-sm-3">
                     <div class="form-group">
                         <label>Bulan Deadline</label>
-                        <select class="form-select" id="bulandl" oninput="filter()">
+                        <select class="form-select" id="bulandl" oninput="filter()" autocomplete="off">
                             <option>Semua</option>
                             <option value="Jan">Januari</option>
                             <option value="Feb">Februari</option>
@@ -62,7 +62,7 @@
                 <div class="col-sm-3">
                     <div class="form-group">
                         <label>Tahun Deadline</label>
-                        <select class="form-select" id="tahundl" oninput="filter()">
+                        <select class="form-select" id="tahundl" oninput="filter()" autocomplete="off">
                             <option>Semua</option>
                             <option>2021</option>
                             <option>2022</option>
@@ -73,7 +73,7 @@
                 <div class="col-sm-3">
                     <div class="form-group">
                         <label>Bulan Realisasi</label>
-                        <select class="form-select" id="bulanreal" oninput="filter()">
+                        <select class="form-select" id="bulanreal" oninput="filter()" autocomplete="off">
                             <option>Semua</option>
                             <option value="Jan">Januari</option>
                             <option value="Feb">Februari</option>
@@ -93,7 +93,7 @@
                 <div class="col-sm-3">
                     <div class="form-group">
                         <label>Tahun Realisasi</label>
-                        <select class="form-select" id="tahunreal" oninput="filter()">
+                        <select class="form-select" id="tahunreal" oninput="filter()" autocomplete="off">
                             <option>Semua</option>
                             <option>2021</option>
                             <option>2022</option>
