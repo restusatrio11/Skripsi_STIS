@@ -26,4 +26,9 @@ class Tugas extends Model
 
     protected $guarded = [];
 
+    public function files()
+    {
+        return $this->hasMany(File::class);
+    }
+
 }
