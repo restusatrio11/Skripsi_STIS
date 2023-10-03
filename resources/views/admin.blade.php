@@ -177,13 +177,9 @@
                                     </td>
                                     <td class="text-center" id="Satuan{{ $key }}">{{ $task->satuan }}</td>
                                     <td class="text-center tgd" id="Deadline{{ $key }}"
-                                        data-value="{{ $task->deadline }}">
-                                        {{ date('d M Y', strtotime($task->deadline)) }}
-                                    </td>
+                                        data-value="{{ $task->deadline }}">{{ date('d M Y', strtotime($task->deadline)) }}</td>
                                     @if ($task->tgl_realisasi != null)
-                                        <td class="text-center tgr" id="Tgl_Realisasi{{ $key }}">
-                                            {{ date('d M Y', strtotime($task->tgl_realisasi)) }}
-                                        </td>
+                                        <td class="text-center tgr" id="Tgl_Realisasi{{ $key }}">{{ date('d M Y', strtotime($task->tgl_realisasi)) }}</td>
                                     @else
                                         <td class="text-center tgr" id="Tgl_Realisasi{{ $key }}"></td>
                                     @endif
@@ -752,7 +748,6 @@
             let namaa = $(`#Nama${keyy}`).text();
             let asall = $(`#Asal${keyy}`).text();
             let file = $(`#file${keyy}`).val();
-            console.log(asall);
 
             $('#inputidnmr').val(idd);
             $('#inputOrang').val(pegawaii);
@@ -774,7 +769,8 @@
             dropdownbulandl = $('#bulandl');
             dropdowntahundl = $('#tahundl');
             table = document.getElementById("dtBasicExample");
-            rows = table.getElementsByTagName("tr");
+            body = table.getElementsByTagName("tbody")[0];
+            rows = body.getElementsByTagName("tr");
             filterbulanreal = dropdownbulanreal.val();
             filtertahunreal = dropdowntahunreal.val();
             filterbulandl = dropdownbulandl.val();
@@ -783,48 +779,51 @@
                 cells = row.getElementsByTagName("td");
                 dl = cells[8] || null;
                 real = cells[9] || null;
-                if (
-                    (filterbulanreal === "Semua" && filtertahunreal === "Semua" && filterbulandl === "Semua" &&
-                        filtertahundl === "Semua") ||
-                    !dl ||
-                    (filterbulanreal === "Semua" && filtertahunreal === "Semua" && filterbulandl === "Semua" &&
-                        filtertahundl === dl.textContent.substring(7, 11)) ||
-                    (filterbulanreal === "Semua" && filtertahunreal === "Semua" && filterbulandl === dl.textContent
-                        .substring(3, 6) && filtertahundl === "Semua") ||
-                    (filterbulanreal === "Semua" && filtertahunreal === "Semua" && filterbulandl === dl.textContent
-                        .substring(3, 6) && filtertahundl === dl.textContent.substring(7, 11)) ||
-                    (filterbulanreal === "Semua" && filtertahunreal === real.textContent.substring(7, 11) &&
-                        filterbulandl === "Semua" && filtertahundl === "Semua") ||
-                    (filterbulanreal === "Semua" && filtertahunreal === real.textContent.substring(7, 11) &&
-                        filterbulandl === "Semua" && filtertahundl === dl.textContent.substring(7, 11)) ||
-                    (filterbulanreal === "Semua" && filtertahunreal === real.textContent.substring(7, 11) &&
-                        filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === "Semua") ||
-                    (filterbulanreal === "Semua" && filtertahunreal === real.textContent.substring(7, 11) &&
-                        filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === dl.textContent.substring(7,
-                            11)) ||
-                    (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === "Semua" &&
-                        filterbulandl === "Semua" && filtertahundl === "Semua") ||
-                    (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === "Semua" &&
-                        filterbulandl === "Semua" && filtertahundl === dl.textContent.substring(7, 11)) ||
-                    (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === "Semua" &&
-                        filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === "Semua") ||
-                    (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === "Semua" &&
-                        filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === dl.textContent.substring(7,
-                            11)) ||
-                    (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === real.textContent.substring(
-                        7, 11) && filterbulandl === "Semua" && filtertahundl === "Semua") ||
-                    (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === real.textContent.substring(
-                        7, 11) && filterbulandl === "Semua" && filtertahundl === dl.textContent.substring(7, 11)) ||
-                    (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === real.textContent.substring(
-                        7, 11) && filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === "Semua") ||
-                    (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === real.textContent.substring(
-                            7, 11) && filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === dl.textContent
-                        .substring(7, 11))
-                ) {
-                    row.style.display = ""; // shows this row
-                } else {
+                if (!dl) row.style.display = "";
+                else {
+                    if (
+                        (filterbulanreal === "Semua" && filtertahunreal === "Semua" && filterbulandl === "Semua" &&
+                            filtertahundl === "Semua") ||
+                        !dl ||
+                        (filterbulanreal === "Semua" && filtertahunreal === "Semua" && filterbulandl === "Semua" &&
+                            filtertahundl === dl.textContent.substring(7, 11)) ||
+                        (filterbulanreal === "Semua" && filtertahunreal === "Semua" && filterbulandl === dl.textContent
+                            .substring(3, 6) && filtertahundl === "Semua") ||
+                        (filterbulanreal === "Semua" && filtertahunreal === "Semua" && filterbulandl === dl.textContent
+                            .substring(3, 6) && filtertahundl === dl.textContent.substring(7, 11)) ||
+                        (filterbulanreal === "Semua" && filtertahunreal === real.textContent.substring(7, 11) &&
+                            filterbulandl === "Semua" && filtertahundl === "Semua") ||
+                        (filterbulanreal === "Semua" && filtertahunreal === real.textContent.substring(7, 11) &&
+                            filterbulandl === "Semua" && filtertahundl === dl.textContent.substring(7, 11)) ||
+                        (filterbulanreal === "Semua" && filtertahunreal === real.textContent.substring(7, 11) &&
+                            filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === "Semua") ||
+                        (filterbulanreal === "Semua" && filtertahunreal === real.textContent.substring(7, 11) &&
+                            filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === dl.textContent.substring(7,
+                                11)) ||
+                        (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === "Semua" &&
+                            filterbulandl === "Semua" && filtertahundl === "Semua") ||
+                        (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === "Semua" &&
+                            filterbulandl === "Semua" && filtertahundl === dl.textContent.substring(7, 11)) ||
+                        (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === "Semua" &&
+                            filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === "Semua") ||
+                        (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === "Semua" &&
+                            filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === dl.textContent.substring(7,
+                                11)) ||
+                        (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === real.textContent.substring(
+                            7, 11) && filterbulandl === "Semua" && filtertahundl === "Semua") ||
+                        (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === real.textContent.substring(
+                            7, 11) && filterbulandl === "Semua" && filtertahundl === dl.textContent.substring(7, 11)) ||
+                        (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === real.textContent.substring(
+                            7, 11) && filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === "Semua") ||
+                        (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === real.textContent.substring(
+                                7, 11) && filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === dl.textContent
+                            .substring(7, 11))
+                    ) {
+                        row.style.display = ""; // shows this row
+                    } else {
 
-                    row.style.display = "none"; // hides this row
+                        row.style.display = "none"; // hides this row
+                    }
                 }
             }
         }
