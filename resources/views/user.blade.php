@@ -160,9 +160,7 @@
                                     <td style="text-align: center">{{ $task->satuan }}</td>
                                     <td style="text-align: center">{{ date('d M Y', strtotime($task->deadline)) }}</td>
                                     @if ($task->tgl_realisasi != null)
-                                        <td class="text-center tgr">
-                                            {{ (new DateTime($task->tgl_realisasi))->format('d M Y') }}
-                                        </td>
+                                        <td class="text-center tgr">{{ (new DateTime($task->tgl_realisasi))->format('d M Y') }}</td>
                                     @else
                                         <td class="text-center tgr"></td>
                                     @endif
