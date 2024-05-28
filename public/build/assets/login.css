@@ -1,9 +1,8 @@
 body {
     color: #000;
     overflow-x: hidden;
-    height: 100%;
     background-image: linear-gradient(to right, #4c96db, #194d7e);
-    background-repeat: no-repeat;
+    background-repeat: repeat;
 }
 
 input, textarea {

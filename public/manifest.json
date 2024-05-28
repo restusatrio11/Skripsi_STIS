@@ -1,0 +1,39 @@
+{
+    "name": "Sistem Manajemen Kinerja BPS Kabupaten Klaten",
+    "short_name": "SIMANJA",
+    "start_url": "/simanja/dashboard",
+    "background_color": "#6777ef",
+    "description": "management working",
+    "display": "fullscreen",
+    "theme_color": "#6777ef",
+    "icons": [
+
+            {
+                "src": "simanjaAPP.png",
+                "sizes": "512x512",
+                "type": "image/png",
+                "purpose": "any"
+              },
+              {
+                "src": "simanjaAPP.png",
+                "sizes": "512x512",
+                "type": "image/png",
+                "purpose": "maskable"
+              }
+
+    ],
+    "screenshots": [
+        {
+          "src": "simanjaAPP.png",
+          "type": "image/png",
+          "sizes": "512x512",
+          "form_factor": "narrow"
+        },
+        {
+          "src": "simanjaAPP.png",
+          "type": "image/jpg",
+          "sizes": "512x512",
+          "form_factor": "wide"
+        }
+    ]
+}

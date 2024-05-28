@@ -4,104 +4,63 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\jenis_tugas;
+use App\Models\tim;
+use App\Models\JBT;
 use Illuminate\Support\Facades\Session;
 
 class SuperadminController extends Controller
 {
-    // public function index()
-    // {
-    //     // Menampilkan daftar pengguna
-    //     $users = User::all();
-    //     // return view('superadmin.index', compact('users'));
-    //     return view('superadmin', ['users' => $users]);
-    // }
-
-    // public function create()
-    // {
-    //     // Menampilkan formulir untuk membuat pengguna baru
-    //     return view('superadmin.create');
-    // }
-
-    // public function store(Request $request)
-    // {
-    //     // Menyimpan pengguna baru ke database
-    //     $userData = $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'email' => 'required|email|unique:users',
-    //         'password' => 'required|string|min:8',
-    //         'role' => 'required|string',
-    //     ]);
-
-    //     $userData['password'] = bcrypt($userData['password']);
-    //     User::create($userData);
-
-    //     return redirect()->route('superadmin.index')
-    //         ->with('success', 'Pengguna berhasil dibuat.');
-    // }
-
-    // public function edit(User $user)
-    // {
-    //     // Menampilkan formulir untuk mengedit pengguna
-    //     return view('superadmin.edit', compact('user'));
-    // }
-
-    // public function update(Request $request, User $user)
-    // {
-    //     // Mengupdate data pengguna
-    //     $userData = $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'email' => 'required|email|unique:users,email,' . $user->id,
-    //         'role' => 'required|string',
-    //     ]);
-
-    //     $user->update($userData);
-
-    //     return redirect()->route('superadmin.index')
-    //         ->with('success', 'Pengguna berhasil diperbarui.');
-    // }
-
-    // public function destroy(User $user)
-    // {
-    //     // Menghapus pengguna
-    //     $user->delete();
-
-    //     return redirect()->route('superadmin.index')
-    //         ->with('success', 'Pengguna berhasil dihapus.');
-    // }
 
     public function index()
     {
-        // $user_role = Session::get('role');
-        // Menampilkan daftar pengguna
-        $users = User::all();
-        return view('superadmin', ['users' => $users]);
+
+        $jenis_tim = tim::all();
+        $users = User::join('users_tim','users.id','=','users_tim.NIPpegawai')->join('tim','users_tim.KodeTim','=','tim.kode')->orderBy('name', 'asc')// Mengurutkan secara ascending (A-Z)
+        ->get();
+
+        $users = $users->groupBy('NIPpegawai')->map(function ($userGroup) {
+            $user = $userGroup->first();
+            $user->tim = $userGroup->pluck('tim')->implode(",");
+            $user->KodeTim = $userGroup->pluck('KodeTim')->implode(",");
+            $user->JabatanPegawai = $userGroup->pluck('JabatanPegawai')->implode(",");
+            return $user;
+        });
+
+        $jenis_tugas = jenis_tugas::all();
+        return view('superadmin', ['users' => $users,'jenis_tugas'=> $jenis_tugas,'jenis_tim' => $jenis_tim]);
     }
+
+
 
     public function store(Request $request){
 
-        // Menyimpan pengguna baru ke database
-        // $userData = $request->validate([
-        //     'name' => 'required|string|max:255',
-        //     'email' => 'required|email|unique:users',
-        //     'password' => 'required|string|min:8',
-        //     'role' => 'required|string',
-        // ]);
-
-        $userData = $request->except('email_verified_at','remember_token','created_at','updated_at');
+        $userData = $request->except('email_verified_at','remember_token','created_at','updated_at','jabatan','tim');
         $userData['password'] = bcrypt($userData['password']);
 
-
         $simpan = User::create($userData);
+
         if ($simpan) {
+            foreach ($request->tim as $key => $tim) {
+                $jabatan = $request->jabatan[$key]; // Mengambil jabatan yang sesuai dengan indeks tim
+
+                JBT::create([
+                    'NIPpegawai' => $userData['id'],
+                    'JabatanPegawai' => $jabatan,
+                    'KodeTim' => $tim,
+                ]);
+            }
+
             Session::flash('success', 'Akun berhasil dibuat.');
         } else {
             Session::flash('success', 'Akun gagal dibuat.');
         }
 
-        // $user = Auth::user();
-        // if($user->role == 'admin')
-        return redirect('superadmin');
+        return redirect('simanja/user');
     }
+
+
+
 
     /**
      * Update the specified resource in storage.
@@ -112,21 +71,119 @@ class SuperadminController extends Controller
      */
     public function update(Request $request)
 {
+    $data = User::join('users_tim','users.id','=','users_tim.NIPpegawai')->join('tim','users_tim.KodeTim','=','tim.kode')->where('urutan', $request->input('urutan'))->first();
 
-
-    // // Mengupdate data pengguna
-    //     $userData = $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'email' => 'required|email|unique:users,email,' . $user->id,
-    //         'role' => 'required|string',
-    //     ]);
-    // dd($request->all());
-    $data = User::find($request->input('id'));
-    // $data->pegawai_id = $request->input('pegawai_id');
+    // Memperbarui data pengguna
     $data->name = $request->input('name');
     $data->email = $request->input('email');
     $data->role = $request->input('role');
-    $data->password = bcrypt($request->input('password'));
+    // $data->password = Hash::make($request->input('password'));
+    $jbtpegawai = JBT::where('NIPpegawai', $data->id)->get();
+    $banyakjbtpegawai =  JBT::where('NIPpegawai', $data->id)->count();
+    $jumlahTimPermintaan = count($request->tim);
+
+
+    foreach ($request->tim as $key => $tim) {
+        $jabatan = $request->jabatan[$key];
+
+        if ($jumlahTimPermintaan > $banyakjbtpegawai) {
+            // Jika jumlah tim dalam permintaan lebih besar dari jumlah entri JBT yang sudah ada,
+            // buat entri baru
+            $jbtBaru = new JBT();
+            $jbtBaru->NIPpegawai = $data->id;
+            $jbtBaru->KodeTim = $tim;
+            $jbtBaru->JabatanPegawai = $jabatan;
+            $jbtBaru->save();
+
+            // Perbarui jumlah entri JBT yang sudah ada
+            $banyakjbtpegawai++;
+        }
+    }
+
+        $jbtpegawai = JBT::where('NIPpegawai', $data->id)->get();
+
+        foreach ($jbtpegawai as $key => $jbt) {
+            $tim = $request->tim[$key];
+            $jabatan = $request->jabatan[$key];
+            $jbt->KodeTim = $tim;
+            $jbt->JabatanPegawai = $jabatan;
+            $jbt->save();
+        }
+
+    $simpan = $data->save();
+
+    if ($simpan) {
+        Session::flash('success', 'Akun berhasil diupdate.');
+    } else {
+        Session::flash('error', 'Akun gagal diupdate.');
+    }
+
+    return redirect('/simanja/user');
+}
+
+
+
+
+public function delete(Request $request)
+{
+    $id = $request->input('id');
+
+    // Hapus entri JBT terkait dengan pengguna
+    $jbtDelete = JBT::where('NIPpegawai', $id)->delete();
+
+    // Hapus pengguna
+    $data = User::find($id);
+    if (!$data) {
+        Session::flash('error', 'User tidak ditemukan.');
+        return redirect('simanja/progress');
+    }
+
+    $delete = $data->delete();
+
+    if ($delete && $jbtDelete !== false) {
+        Session::flash('success', 'User berhasil dihapus');
+    } else {
+        Session::flash('error', 'User gagal dihapus atau terjadi kesalahan saat menghapus entri JBT terkait.');
+    }
+
+    return redirect('/simanja/user');
+}
+
+
+public function deleteJbtPegawai($id,$idtim)
+{
+    $jbtpegawai = JBT::where('no',$id)->where('KodeTim',$idtim)->first();
+
+    if (!$jbtpegawai) {
+        return response()->json(['success' => false, 'message' => 'Data tidak ditemukan.'], 404);
+    }
+
+    $jbtpegawai->delete();
+
+    return response()->json(['success' => true, 'message' => 'Data berhasil dihapus.'], 200);
+}
+
+
+public function storejtugas(Request $request){
+    $jtugas = $request->except('no');
+    $simpan = jenis_tugas::create($jtugas);
+    if ($simpan) {
+        Session::flash('success', 'Jenis Tugas berhasil dibuat.');
+    } else {
+        Session::flash('success', 'Jenis Tugas dibuat.');
+    }
+
+    // $user = Auth::user();
+    // if($user->role == 'admin')
+    return redirect('/simanja/superadmin');
+}
+
+public function updatejtugas(Request $request){
+    $data = jenis_tugas::find($request->input('no'));
+    $data->tugas = $request->input('tugas');
+    $data->satuan = $request->input('satuan');
+    $data->bobot = $request->input('bobot');
+    $data->asal_tim = $request->input('asal_tim');
 
     $simpan = $data->save();
 
@@ -139,33 +196,32 @@ class SuperadminController extends Controller
 
     // $user = Auth::user();
     // if($user->role == 'admin')
-    return redirect('superadmin');
-    // return view('admin', ['data' => $data]);
-
+    return redirect('/simanja/superadmin');
 }
 
-public function delete(Request $request)
+public function deletejtugas(Request $request)
 {
-    $id = $request->input('id');
+    $no = $request->input('no');
 
-        $data = User::find($id);
+        $data = jenis_tugas::find($no);
         if (!$data) {
-            Session::flash('error', 'User tidak ditemukan.');
+            Session::flash('error', 'Jenis Tugas tidak ditemukan.');
             return redirect('admin');
         }
 
         $delete = $data->delete();
 
         if ($delete) {
-            Session::flash('success', 'User berhasil dihapus.');
+            Session::flash('success', 'Jenis Tugas berhasil dihapus.');
         } else {
-            Session::flash('error', 'User gagal dihapus.');
+            Session::flash('error', 'Jenis Tugas gagal dihapus.');
         }
 
         // $user = Auth::user();
         // if ($user->role == 'admin') {
         //     return redirect('admin');
         // }
-        return redirect('superadmin');
+        return redirect('/simanja/superadmin');
 }
+
 }

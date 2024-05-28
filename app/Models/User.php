@@ -18,9 +18,12 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'urutan',
         'id',
         'name',
         'tim',
+        'idtim',
+        'jabatan',
         'email',
         'password',
         'role'
@@ -44,5 +47,21 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'idtim' => 'string',
     ];
+
+    public function TimAnggota(){
+        return $this->belongsTo(tim::class, 'idtim', 'kode');
+    }
+
+    public function JenisJabatan(){
+        return $this->belongsTo(JBT::class, 'id', 'NIPpegawai');
+    }
+
+    public function jbtpegawai()
+    {
+        return $this->hasOne(JBT::class);
+    }
+
+
 }

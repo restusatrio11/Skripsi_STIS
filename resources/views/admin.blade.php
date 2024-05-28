@@ -1,116 +1,137 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+    <style>
+        /* Ensure that the demo table scrolls */
 
-            @if ($admin->tim === 'Subbag Umum')
-                <a class="nav-item nav-link" href="#" data-bs-toggle="modal" data-bs-target="#tambahkerja"
-                    style="color: #ffffff"><button type="button" class="btn btn-primary btn-floating"><i
-                            class="fas fa-square-pen">
-                            Create</i></button></a>
+        th,
+        td {
+            white-space: nowrap;
+        }
 
-                <a class="nav-item nav-link" href="#" data-bs-toggle="modal" data-bs-target="#ckpkerja" id="cetak"
-                    style="color: #ffffff"><button type="button" class="btn btn-primary btn-floating"><i
-                            class="fas fa-download"> CKP</i></button></a>
+        div.dataTables_wrapper {
+            width: 100%;
+            margin: 0 auto;
+        }
+    </style>
 
-                <a class="nav-item nav-link" href="#" data-bs-toggle="modal" data-bs-target="#import" id="cetak"
-                    style="color: #ffffff"><button type="button" class="btn btn-primary btn-floating"><i
-                            class="fas fa-file-import"> Import</i></button></a>
+    <div class="container-fluid">
 
-                <a href="/export_excel" class="nav-item nav-link" target="_blank"><button type="button"
-                        class="btn btn-primary btn-floating"><i class="fas fa-file-export"> Export</i></button></a>
+        {{-- <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Progress {{ Auth::user()->tim }}</h1>
+            <p id="realtime-clock" class="mb-0 text-gray-600"></p>
+        </div> --}}
+
+        <!-- resources/views/tasks/index.blade.php -->
+
+        @php
+            $selectedYear = request('year', null);
+            $selectedMonth = request('month', null);
+        @endphp
+
+        <div class="row">
+            @if (Auth::user()->TimAnggota !== null)
+                <div class="col-sm-auto align-self-center">
+                    <h5>Progress {{ Auth::user()->TimAnggota->tim }}</h5>
+                </div>
             @else
-                <a class="nav-item nav-link" href="#" data-bs-toggle="modal" data-bs-target="#tambahkerja"
-                    style="color: #ffffff"><button type="button" class="btn btn-primary btn-floating"><i
-                            class="fas fa-square-pen">
-                            Create</i></button></a>
-
-                <a class="nav-item nav-link" href="#" data-bs-toggle="modal" data-bs-target="#import" id="cetak"
-                    style="color: #ffffff"><button type="button" class="btn btn-primary btn-floating"><i
-                            class="fas fa-file-import"> Import</i></button></a>
-
-                <a href="/export_excel" class="nav-item nav-link" target="_blank"><button type="button"
-                        class="btn btn-primary btn-floating"><i class="fas fa-file-export"> Export</i></button></a>
+                <div class="col-sm-auto align-self-center">
+                    <h5>Progress</h5>
+                </div>
             @endif
 
+            <div class="col align-self-center border-top border-primary d-none d-sm-block"></div>
+            <div class="col-sm-auto align-self-center ml-auto">
 
-        </div>
-        <br>
-        <div class="card-body bg-white">
-            <div class="row mb-3">
-                <div class="col-sm-3">
-                    <div class="form-group">
-                        <label>Bulan Deadline</label>
-                        <select class="form-select" id="bulandl" oninput="filter()" autocomplete="off">
-                            <option>Semua</option>
-                            <option value="Jan">Januari</option>
-                            <option value="Feb">Februari</option>
-                            <option value="Mar">Maret</option>
-                            <option value="Apr">April</option>
-                            <option value="May">Mei</option>
-                            <option value="Jun">Juni</option>
-                            <option value="Jul">Juli</option>
-                            <option value="Aug">Agustus</option>
-                            <option value="Sep">September</option>
-                            <option value="Oct">Oktober</option>
-                            <option value="Nov">November</option>
-                            <option value="Dec">Desember</option>
-                        </select>
+                <form method="post" action="{{ url('/simanja/progress') }}" class="form-inline">
+                    @csrf
+                    <div class="row">
+                        <div class="form-group col px-1">
+                            <select name="month" id="month" class="form-control" required>
+                                <option value="" {{ $selectedMonth === null ? 'selected' : '' }}>Bulan
+                                </option>
+                                @for ($i = 1; $i <= 12; $i++)
+                                    <option value="{{ $i }}" {{ $selectedMonth == $i ? 'selected' : '' }}>
+                                        {{ date('F', mktime(0, 0, 0, $i, 1)) }}
+                                    </option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="form-group col px-0">
+                            <select name="year" id="year" class="form-control" required>
+                                <option value="" {{ $selectedYear === null ? 'selected' : '' }}>Tahun</option>
+                                @php
+                                    $currentYear = date('Y');
+                                    $endYear = $currentYear + 5;
+                                @endphp
+                                @for ($i = $endYear; $i >= $currentYear; $i--)
+                                    <option value="{{ $i }}" {{ $selectedYear == $i ? 'selected' : '' }}>
+                                        {{ $i }}
+                                    </option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="form-group col px-1">
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                        </div>
                     </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="form-group">
-                        <label>Tahun Deadline</label>
-                        <select class="form-select" id="tahundl" oninput="filter()" autocomplete="off">
-                            <option>Semua</option>
-                            <option>2021</option>
-                            <option>2022</option>
-                            <option>2023</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="form-group">
-                        <label>Bulan Realisasi</label>
-                        <select class="form-select" id="bulanreal" oninput="filter()" autocomplete="off">
-                            <option>Semua</option>
-                            <option value="Jan">Januari</option>
-                            <option value="Feb">Februari</option>
-                            <option value="Mar">Maret</option>
-                            <option value="Apr">April</option>
-                            <option value="May">Mei</option>
-                            <option value="Jun">Juni</option>
-                            <option value="Jul">Juli</option>
-                            <option value="Aug">Agustus</option>
-                            <option value="Sep">September</option>
-                            <option value="Oct">Oktober</option>
-                            <option value="Nov">November</option>
-                            <option value="Dec">Desember</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="form-group">
-                        <label>Tahun Realisasi</label>
-                        <select class="form-select" id="tahunreal" oninput="filter()" autocomplete="off">
-                            <option>Semua</option>
-                            <option>2021</option>
-                            <option>2022</option>
-                            <option>2023</option>
-                        </select>
-                    </div>
-                </div>
+                </form>
+
             </div>
         </div>
 
-        {{-- <div class="d-grid gap-2 d-md-block">
-            <button type="button" class="btn btn-primary btn-floating">
-                <a class="nav-item nav-link" href="#" data-bs-toggle="modal" data-bs-target="#ckpkerja" id="cetak"
-                    style="color: #ffffff"><i class="fas fa-download"></i></a>
-            </button>
-        </div> --}}
-        {{-- <br> --}}
+
+        <br>
+        <div class="card-body bg-white">
+            @if (Auth::user()->TimAnggota !== null)
+                <div class="card-header"style="background: linear-gradient(to right, #4c96db, #194d7e);">
+                    <h4 class="card-title" style="color: white">Tabel Kinerja Pegawai {{ Auth::user()->TimAnggota->tim }}
+                        {{ date('F', mktime(0, 0, 0, intval($bulan), 1)) }}
+                    </h4>
+                </div>
+            @else
+                <div class="card-header"style="background: linear-gradient(to right, #4c96db, #194d7e);">
+                    <h4 class="card-title" style="color: white">Tabel Kinerja Pegawai
+                        {{ date('F', mktime(0, 0, 0, intval($bulan), 1)) }}
+                    </h4>
+                </div>
+            @endif
+
+            <br>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+
+                @if ($admin->tim === 'Subbag Umum')
+                    <a class="nav-item nav-link" href="#" data-bs-toggle="modal" data-bs-target="#tambahkerja"
+                        style="color: #ffffff"><i class="bi bi-pencil-square"></i>Tambah Pekerjaan</a>
+
+                    <a class="nav-item nav-link" href="#" data-bs-toggle="modal" data-bs-target="#ckpkerja"
+                        id="cetak" style="color: #ffffff"><button type="button" class="btn btn-primary btn-floating"><i
+                                class="fas fa-download"> CKP</i></button></a>
+
+                    <a class="nav-item nav-link" href="#" data-bs-toggle="modal" data-bs-target="#import"
+                        id="cetak" style="color: #ffffff"><button type="button" class="btn btn-primary btn-floating"><i
+                                class="fas fa-file-import"> Import</i></button></a>
+
+                    <a href="/export_excel" class="nav-item nav-link" target="_blank"><button type="button"
+                            class="btn btn-primary btn-floating"><i class="fas fa-file-export"> Export</i></button></a>
+                @else
+                    <a class="btn btn-custom" href="#" data-bs-toggle="modal" data-bs-target="#tambahkerja"><i
+                            class="bi bi-pencil-square"></i> Tambah Pekerjaan</a>
+
+                    <a class="btn btn-custom" href="#" data-bs-toggle="modal" data-bs-target="#import"
+                        id="cetak"><i class="bi bi-box-arrow-in-right"></i> Import</a>
+
+                    <a href="{{ route('export_excel', ['year' => $selectedYear, 'month' => $selectedMonth]) }}"
+                        class="btn btn-custom" target="_blank"><i class="bi bi-box-arrow-right"></i> Export</a>
+                @endif
+
+
+            </div>
+            <br>
+
+        </div>
+
+
         <div class="card-shadow">
             <div class="card-body bg-white">
                 <div class="table-responsive-xl">
@@ -127,23 +148,52 @@
                             <th class="text-center">Satuan</th>
                             <th class="text-center">Deadline</th>
                             <th class="text-center">Tgl Realisasi</th>
-                            <th class="text-center">Nilai</th>
+                            {{-- <th class="text-center">Nilai Akhir</th> --}}
+                            <th class="text-center">Nilai Kualitas</th>
+                            <th class="text-center">Nilai Kuantitas</th>
                             <th class="text-center">Keterangan</th>
+                            <th class="text-center">Catatan</th>
                             <th class="text-center">Aksi</th>
                         </thead>
                         <tbody>
                             @foreach ($tasks as $key => $task)
                                 <tr id="table-admin">
-                                    <input id="id{{ $key }}" type="hidden" value="{{ $task->task_id }}">
-                                    <input id="pegawai_id{{ $key }}" type="hidden"
-                                        value="{{ $task->pegawai_id }}">
-                                    <input id="file{{ $key }}" type="hidden" value="{{ $task->task_id }}">
+
                                     <td class="text-center">{{ $key + 1 }}</td>
-                                    <td class="text-center" id="Pegawai{{ $key }}">{{ $task->name }}</td>
+                                    <td id="Pegawai{{ $key }}">{{ $task->name }}</td>
                                     {{-- <td class="text-center" id="pegawai_id{{ $key }}">{{ $task->pegawai_id }}</td> --}}
-                                    <td class="text-center" id="Nama{{ $key }}">{{ $task->nama }}</td>
-                                    <td class="text-center">
-                                        @if ($task->bobot == 'Besar')
+                                    <td class="text-left" id="Nama{{ $key }}">{{ $task->tugas }}</td>
+                                    <script>
+                                        // Mendapatkan elemen dengan id 'Nama{{ $key }}'
+                                        var element = document.getElementById('Nama{{ $key }}');
+
+                                        // Mendapatkan teks dari elemen
+                                        var text = element.innerText;
+
+                                        // Memecah teks menjadi array kata-kata
+                                        var words = text.split(' ');
+
+                                        // Inisialisasi variabel untuk menyimpan teks yang telah dimodifikasi
+                                        var newText = '';
+
+                                        // Menghitung jumlah kata
+                                        var wordCount = words.length;
+
+                                        // Menyisipkan tag <br> setelah setiap tiga kata
+                                        for (var i = 0; i < wordCount; i++) {
+                                            // Menambahkan kata ke teks baru
+                                            newText += words[i] + ' ';
+
+                                            // Jika sudah tiga kata, tambahkan tag <br>
+                                            if ((i + 1) % 3 === 0) {
+                                                newText += '<br>';
+                                            }
+                                        }
+
+                                        // Memasukkan teks baru ke dalam elemen
+                                        element.innerHTML = newText;
+                                    </script>
+                                    {{-- @if ($task->bobot == 'Besar')
                                             <span class="badge  rounded-pill text-bg-danger text-white"
                                                 id="Bobot{{ $key }}">Besar</span>
                                         @elseif ($task->bobot == 'Sedang')
@@ -154,9 +204,40 @@
                                                 id="Bobot{{ $key }}">Kecil</span>
                                         @else
                                             {{ $task->bobot }}
-                                        @endif
+                                        @endif --}}
+                                    <td class="text-center" id="Bobot{{ $key }}">{{ $task->bobot }}
                                     </td>
-                                    <td class="text-center" id="Asal{{ $key }}">{{ $task->asal }}</td>
+                                    <td class="text-left" id="Asal{{ $key }}">{{ $task->tim }}</td>
+                                    {{-- <script>
+                                        // Mendapatkan elemen dengan id 'Nama{{ $key }}'
+                                        var element = document.getElementById('Asal{{ $key }}');
+
+                                        // Mendapatkan teks dari elemen
+                                        var text = element.innerText;
+
+                                        // Memecah teks menjadi array kata-kata
+                                        var words = text.split(' ');
+
+                                        // Inisialisasi variabel untuk menyimpan teks yang telah dimodifikasi
+                                        var newText = '';
+
+                                        // Menghitung jumlah kata
+                                        var wordCount = words.length;
+
+                                        // Menyisipkan tag <br> setelah setiap tiga kata
+                                        for (var i = 0; i < wordCount; i++) {
+                                            // Menambahkan kata ke teks baru
+                                            newText += words[i] + ' ';
+
+                                            // Jika sudah tiga kata, tambahkan tag <br>
+                                            if ((i + 1) % 3 === 0) {
+                                                newText += '<br>';
+                                            }
+                                        }
+
+                                        // Memasukkan teks baru ke dalam elemen
+                                        element.innerHTML = newText;
+                                    </script> --}}
                                     <td class="text-center" id="Target{{ $key }}">{{ $task->target }}</td>
                                     <td class="text-center">
                                         <div class="progress">
@@ -176,50 +257,112 @@
                                         <div id="Realisasi{{ $key }}" hidden>{{ $task->realisasi }}</div>
                                     </td>
                                     <td class="text-center" id="Satuan{{ $key }}">{{ $task->satuan }}</td>
-                                    <td class="text-center tgd" id="Deadline{{ $key }}"
-                                        data-value="{{ $task->deadline }}">{{ date('d M Y', strtotime($task->deadline)) }}</td>
+                                    <td class="text-center tgd"
+                                        id="Deadline{{ $key }}"data-value="{{ $task->deadline }}"
+                                        style="white-space: nowrap;">{{ date('d M Y', strtotime($task->deadline)) }}
+                                    </td>
+                                    {{-- <td style="text-align: center">{{ date('d M Y', strtotime($task->deadline)) }}</td> --}}
                                     @if ($task->tgl_realisasi != null)
-                                        <td class="text-center tgr" id="Tgl_Realisasi{{ $key }}">{{ date('d M Y', strtotime($task->tgl_realisasi)) }}</td>
+                                        <td id="Tgl_Realisasi{{ $key }}"
+                                            style="text-align: center;
+                                            white-space:nowrap;
+                                            color:black;"
+                                            class="text-center">{{ date('d M Y', strtotime($task->tgl_realisasi)) }}
+                                        </td>
                                     @else
                                         <td class="text-center tgr" id="Tgl_Realisasi{{ $key }}"></td>
                                     @endif
-                                    <td class="text-center">{{ $task->nilai }}</td>
+                                    {{-- <td class="text-center">{{ $task->nilai }}</td> --}}
+                                    <td class="text-center">{{ $task->nilai_kualitas }}</td>
+                                    <td class="text-center">{{ $task->nilai_kuantitas }}</td>
                                     @if ($task->keterangan == 'Telah dikonfirmasi')
-                                        <td><span
-                                                class="badge rounded-pill text-bg-success text-white">{{ $task->keterangan }}</span>
+                                        <td><span class="badge light badge-success">{{ $task->keterangan }}</span>
                                         </td>
                                     @elseif ($task->keterangan == 'Belum dikerjakan')
                                         <td class="text-center">
-                                            <span
-                                                class="badge  rounded-pill text-bg-warning text-white">{{ $task->keterangan }}</span>
+                                            <span class="badge  light badge-dark">{{ $task->keterangan }}</span>
                                         </td>
                                     @elseif ($task->keterangan == 'Tunggu Konfirmasi')
                                         <td class="text-center">
-                                            <span
-                                                class="badge rounded-pill text-bg-info text-white">{{ $task->keterangan }}</span>
+                                            <span class="badge light badge-warning">{{ $task->keterangan }}</span>
                                         </td>
                                     @endif
+                                    {{-- <td class="text-center" id="Catatan{{ $key }}">{{ $task->catatan }}</td> --}}
+
+
+                                    <td class="text-justify">
+                                        <!-- Tombol "Lihat" hanya muncul jika ada catatan -->
+                                        @if ($task->catatan)
+                                            <button class="btn btn-custom" data-bs-toggle="modal"
+                                                data-bs-target="#modalCatatan{{ $key }}"><i
+                                                    class="bi bi-eye"></i> Lihat</button>
+                                        @endif
+                                    </td>
+
+
                                     <td class="text-center">
+
                                         <a href="#" class="edit" data-bs-toggle="modal"><i
                                                 class="fas fa-square-pen" data-bs-toggle="modal" title="Edit"
-                                                style="color: orange;" data-bs-target="#updatekerja"
+                                                style="color: orange; font-size: 20px;" data-bs-target="#updatekerja"
                                                 data="{{ $key }}" data-id="{{ $task->task_id }}"
-                                                role="button"></i></a>
+                                                role="button"></i>
+                                        </a>
                                         {{-- <form class="delete-form" action="{{ route('delete') }}" method="POST"> --}}
+
                                         <a href="#" class="delete" data-bs-toggle="modal"><i
-                                                class="fas fa-trash hapus" title="Delete" style="color: red;"
-                                                data-id="{{ $task->task_id }}" data-bs-target="#deletekerja"
-                                                data="{{ $key }}" data-bs-toggle="modal"></i></a>
+                                                class="fas fa-trash hapus" title="Delete"
+                                                style="color: red; font-size: 20px;" data-id="{{ $task->task_id }}"
+                                                data-bs-target="#deletekerja" data="{{ $key }}"
+                                                data-bs-toggle="modal"></i></a>
                                         {{-- </form> --}}
-                                        @if ($task->file != null)
-                                            <a href="#" class="edit" data-bs-toggle="modal"
-                                                data-bs-target="#penilaiankerja"><i class="fas fa-circle-info"
-                                                    data-bs-toggle="modal" title="Edit" style="color: blue;"
+                                        @if ($task->keterangan == 'Tunggu Konfirmasi' || $task->keterangan == 'Telah dikonfirmasi')
+                                            <a href="#" class="lihat-dokumen-btn" data-bs-toggle="modal"
+                                                data-bs-target="#penilaiankerja"
+                                                data-task='@json(['link_file' => $task->link_file, 'files' => $task->files])'><i class="fas fa-check-circle"
+                                                    data-bs-toggle="modal" title="Edit"
+                                                    style="color: green; font-size: 20px;"
                                                     data-bs-target="#penilaiankerja" data="{{ $key }}"
                                                     data-id="{{ $task->task_id }}" role="button"></i></a>
                                         @endif
                                     </td>
+                                    <input id="id{{ $key }}" type="hidden" value="{{ $task->task_id }}">
+                                    <input id="tugas_id{{ $key }}" type="hidden"
+                                        value="{{ $task->task_id }}">
+                                    {{-- <input id="file_idd{{ $key }}" type="hidden"
+                                        value="{{ $task->files->file_id }}"> --}}
+                                    <input id="pegawai_id{{ $key }}" type="hidden"
+                                        value="{{ $task->pegawai_id }}">
+                                    <input id="jenistask_id{{ $key }}" type="hidden"
+                                        value="{{ $task->jenistask_id }}">
+                                    {{-- <input id="file{{ $key }}" type="hidden" value="{{ $task->task_id }}"> --}}
+                                    <input id="file{{ $key }}" type="hidden" value="{{ $task->link_file }}">
                                 </tr>
+                                <!-- Modal -->
+                                @if ($task->catatan)
+                                    <div class="modal fade" id="modalCatatan{{ $key }}" tabindex="-1"
+                                        role="dialog" aria-labelledby="modalCatatanLabel{{ $key }}"
+                                        aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header"
+                                                    style="background: linear-gradient(to right, #4c96db, #194d7e);">
+                                                    <h5 class="modal-title" id="modalCatatanLabel{{ $key }}">
+                                                        Catatan</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body text-justify">
+                                                    {{ $task->catatan }}
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn light btn-bahaya"
+                                                        data-bs-dismiss="modal">Tutup</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
                             @endforeach
 
                         </tbody>
@@ -227,6 +370,71 @@
                 </div>
             </div>
         </div>
+        <br>
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow">
+                    <div class="card-body bg-white">
+                        <div class="card-header"style="background: linear-gradient(to right, #4c96db, #194d7e);">
+                            <h4 class="card-title" style="color: white">Tabel Monitoring Pekerjaan
+                                {{ date('F', mktime(0, 0, 0, intval($bulan), 1)) }}
+                            </h4>
+                        </div>
+                        <br>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+
+                            {{-- <a href="/export_excelNA" class="nav-item nav-link" target="_blank"><button type="button"
+                                    class="btn btn-primary btn-floating"><i class="fas fa-file-export">
+                                        Export</i></button></a> --}}
+
+
+                        </div>
+                        <br>
+                        {{-- <canvas id="myChart" class="visual"></canvas> --}}
+                        <div class="table-responsive-xl">
+                            <table id="dtBasicExamplejp" class="stripe row-border order-column nowrap">
+                                <thead>
+                                    <th class="text-center">No</th>
+                                    <th class="text-center">Nama Pekerjaan</th>
+                                    <th class="text-center">Total Target</th>
+                                    <th class="text-center">Total Realisasi</th>
+                                </thead>
+                                <tbody>
+                                    @foreach ($jenisPekerjaan as $key => $jp)
+                                        <tr>
+                                            <td class="text-center">{{ $key + 1 }}</td>
+                                            <td>{{ $jp->tugas }}</td>
+                                            <td class="text-center">{{ $jp->total_target }}</td>
+                                            <td class="text-center">
+                                                <div class="progress">
+                                                    <div class="progress-bar
+                                                @if (($jp->total_realisasi / $jp->total_target) * 100 <= 20) bg-danger
+                                                @elseif (($jp->total_realisasi / $jp->total_target) * 100 <= 50)
+                                                    bg-warning
+                                                @else
+                                                    bg-success @endif"
+                                                        role="progressbar"
+                                                        style="width: {{ ($jp->total_realisasi / $jp->total_target) * 100 }}%;"
+                                                        aria-valuenow="{{ $jp->total_realisasi }}" aria-valuemin="0"
+                                                        aria-valuemax="{{ $jp->total_target }}">
+                                                        {{ $jp->total_realisasi }} / {{ $jp->total_target }}
+                                                    </div>
+                                                </div>{{ round(($jp->total_realisasi / $jp->total_target) * 100, 0) }}%
+                                                <div id="total_realisasi{{ $key }}" hidden>
+                                                    {{ $jp->total_realisasi }}</div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+
     </div>
 
 
@@ -241,7 +449,7 @@
                 <div class="modal-body">
 
                     <!--FORM BUAT PEKERJAAN-->
-                    <form action="{{ Route('store') }}" method="post">
+                    <form id="myForm" action="{{ Route('store') }}" method="post">
                         @csrf
                         <div class="container">
 
@@ -250,106 +458,284 @@
                                     <div class="form-group col">
                                         <input type="hidden" class="form-control" id="inputIdD" name="task_id">
                                     </div>
-                                    <div class="form-group">
-                                        <label>Nama Pegawai</label>
-                                        <div>
-                                            <select name="pegawai_id" class="selectpicker form-control"
-                                                data-live-search="true" required>Pilih Pegawai
-                                                <option>pilih pegawai
-                                                    @foreach ($pegawai as $pegawaibps)
-                                                <option value="{{ $pegawaibps->id }}">{{ $pegawaibps->name }}
-                                                    @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
+
                                 </div>
                             </div>
 
-                            {{-- <div class="form-group col">
-                                <label>ID Pegawai</label>
-                                <input type="text" class="form-control" id="inputpegawai_idd" name="pegawai_id">
-                            </div> --}}
+
 
                             <div class="row">
                                 <div class="form-group col">
-                                    <label for="inputTask">Tugas</label>
-                                    <input type="text" class="form-control" id="inputTaskk" name="nama" required>
+
+                                    <label>Pilih Tugas<span class="text-danger">*</span></label>
+                                    <select name="jenistask_id" id="inputTaskk"
+                                        class="selectpicker form-control select2">
+                                        <option>Pilih Tugas</option>
+                                        @foreach ($jenis_tasks as $jenis)
+                                            <option value="{{ $jenis->no }}" data-satuan="{{ $jenis->satuan }}"
+                                                data-bobot="{{ $jenis->bobot }}">
+                                                {{ $jenis->tugas }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
 
-                                {{-- <div class="form-group col">
-                                    <label for="inputAsal">Asal</label>
-                                    <input type="text" class="form-control" id="inputAsall" name="asal" required>
-                                </div> --}}
 
                                 <div class="form-group">
-                                    <label for="inputAsal">Tim Pemberi Tugas</label>
+                                    <label for="inputAsal">Tim Pemberi Tugas<span class="text-danger">*</span></label>
                                     <div>
 
-                                        <select name="asal" class="selectpicker form-control" data-live-search="true"
+                                        <select class="selectpicker form-control" data-live-search="true"
                                             id="inputAsall">
-                                            <option>Pilih Tim</option>
-                                            <option value="Subbag Umum">Subbag Umum</option>
-                                            <option value="Tim Kependudukan dan Ketahanan Sosial">Tim Kependudukan dan
-                                                Ketahanan Sosial</option>
-                                            <option value="Tim Kesejahteraan Rakyat">Tim Kesejahteraan Rakyat</option>
-                                            <option value="Tim Pertanian">Tim Pertanian</option>
-                                            <option value="Tim Industri dan Konstruksi">Tim Industri dan Konstruksi
-                                            </option>
-                                            <option value="Tim Distribusi, Keuangan, dan Pariwisata">Tim Distribusi,
-                                                Keuangan, dan Pariwisata</option>
-                                            <option value="Tim Survei Pendukung Nerwilis">Tim Survei Pendukung Nerwilis
-                                            </option>
-                                            <option value="Tim Statistik Harga">Tim Statistik Harga</option>
-                                            <option value="Tim Diseminasi">Tim Diseminasi</option>
-                                            <option value="Tim Pengolahan">Tim Pengolahan</option>
+                                            <option value=" " disabled>Pilih Tim</option>
+                                            @foreach ($jenis_tim as $jtim)
+                                                <option value="{{ $jtim->tim }}">
+                                                    {{ $jtim->tim }}
+                                                </option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Bobot</label>
-                                    <div>
-                                        <select name="bobot" class="selectpicker form-control" data-live-search="true"
-                                            required>
-                                            <option>Pilih Bobot</option>
-                                            <option>Besar</option>
-                                            <option>Sedang</option>
-                                            <option>Kecil</option>
-                                        </select>
-                                    </div>
+
+
                                 </div>
                             </div>
 
                             <div class="row">
-                                <div class="col-md-2">
-                                    <label for="inputTarget">Target</label>
-                                    <input type="text" class="form-control" id="inputTargett" name="target"
-                                        required>
-                                </div>
-                                <div class="col-md-2">
-                                    <label for="inputRealisasi">Realisasi</label>
-                                    <input type="text" class="form-control" id="inputRealisasii" name="realisasi"
-                                        required>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="inputSatuan">Satuan</label>
-                                    <input type="text" class="form-control" id="inputSatuann" name="satuan"
-                                        required>
-                                </div>
-                            </div>
 
+                                <div class="form-group">
+                                    <label for="inputBobot">Bobot<span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="inputBobot"
+                                        placeholder="Bobot Pekerjaan" readonly>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="inputSatuan">Satuan<span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="inputSatuan"
+                                        placeholder="Satuan Pekerjaan" readonly>
+                                </div>
+
+                                <div class="col-md-2">
+                                    {{-- <label for="inputRealisasi">Realisasi</label> --}}
+                                    <input type="hidden" class="form-control" id="inputRealisasii" name="realisasi"
+                                        value="0" readonly>
+                                </div>
+
+                            </div>
                             <div class="form-group">
-                                <label for="inputDeadline">Deadline</label>
+                                <label for="inputDeadline">Deadline<span class="text-danger">*</span></label>
                                 <input type="date" class="form-control" id="deadlinee" name="deadline"
                                     placeholder="DD/MM/YYYY" required />
                             </div>
                             <input type="hidden" class="form-control" name="keterangan" />
                             <br>
-                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <div class="container">
+                                <label class="font-weight-bold" style="font-weight: bold">Pilih Pegawai dan Isi
+                                    Target<span class="text-danger">*</span></label>
+                                <br>
+                                <table class="table" id="tableinsertpegawaitarget">
+                                    <thead>
+                                        <tr>
+                                            <th>Nama Pegawai</th>
+                                            <th>Target</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($pegawai as $pegawaibps)
+                                            <tr>
+                                                <td>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox"
+                                                            name="pegawai_id[]" value="{{ $pegawaibps->id }}"
+                                                            id="pegawai_{{ $pegawaibps->id }}">
+                                                        <label class="form-check-label"
+                                                            for="pegawai_{{ $pegawaibps->id }}">{{ $pegawaibps->name }}</label>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="form-group">
+                                                        <input type="text" class="form-control target-input"
+                                                            id="inputTarget_{{ $pegawaibps->id }}"
+                                                            name="target[{{ $pegawaibps->id }}]">
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            <br>
+
+                            <input type="hidden" name="selectedTargets" id="selectedTargets">
+
+                            <script>
+                                var selectedTargets = {};
+
+                                $(".form-check-input").change(function() {
+                                    // Validasi hanya mengirim input target untuk pegawai yang dipilih
+                                    var targetInputs = document.querySelectorAll('.target-input');
+
+                                    targetInputs.forEach(function(input) {
+                                        var checkboxId = input.id.replace('inputTarget_', 'pegawai_');
+                                        var checkbox = document.getElementById(checkboxId);
+
+                                        if (checkbox) {
+                                            if (checkbox.checked) {
+                                                // Jika checkbox dipilih, berikan kembali atribut 'name'
+                                                input.setAttribute('name', 'target[' + checkbox.value + ']');
+                                                selectedTargets[checkbox.value] = input.value;
+                                            } else {
+                                                input.removeAttribute('name');
+                                                if (selectedTargets[checkbox.value])
+                                                    delete selectedTargets[checkbox.value];
+                                            }
+                                        }
+                                    });
+                                    // Convert objek selectedTargets menjadi string JSON dan masukkan ke input tersembunyi
+                                    document.getElementById('selectedTargets').value = JSON.stringify(selectedTargets);
+                                });
+
+                                $(".target-input").change(function() {
+                                    // Validasi hanya mengirim input target untuk pegawai yang dipilih
+                                    var targetInputs = document.querySelectorAll('.target-input');
+
+                                    targetInputs.forEach(function(input) {
+                                        var checkboxId = input.id.replace('inputTarget_', 'pegawai_');
+                                        var checkbox = document.getElementById(checkboxId);
+
+                                        if (checkbox) {
+                                            if (checkbox.checked) {
+                                                // Jika checkbox dipilih, berikan kembali atribut 'name'
+                                                input.setAttribute('name', 'target[' + checkbox.value + ']');
+                                                selectedTargets[checkbox.value] = input.value;
+                                            } else {
+                                                input.removeAttribute('name');
+                                                if (selectedTargets[checkbox.value])
+                                                    delete selectedTargets[checkbox.value];
+                                            }
+                                        }
+                                    });
+                                    // Convert objek selectedTargets menjadi string JSON dan masukkan ke input tersembunyi
+                                    document.getElementById('selectedTargets').value = JSON.stringify(selectedTargets);
+                                });
+                            </script>
+                            <div id="alertMessage" class="alert alert-warning alert-dismissible fade show"
+                                style="display: none;">
+                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor"
+                                    stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"
+                                    class="me-2">
+                                    <path
+                                        d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                                    </path>
+                                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                </svg>
+                                <strong class="alertMessagee"></strong>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                    aria-label="btn-close"></button>
+                            </div>
+                            <script>
+                                var selectedTargets = {};
+
+                                // Fungsi untuk memperbarui objek selectedTargets
+                                function updateSelectedTargets() {
+                                    var targetInputs = document.querySelectorAll('.target-input');
+
+                                    targetInputs.forEach(function(input) {
+                                        var checkboxId = input.id.replace('inputTarget_', 'pegawai_');
+                                        var checkbox = document.getElementById(checkboxId);
+
+                                        if (checkbox) {
+                                            if (checkbox.checked) {
+                                                // Jika checkbox dipilih, berikan kembali atribut 'name'
+                                                input.setAttribute('name', 'target[' + checkbox.value + ']');
+                                                selectedTargets[checkbox.value] = input.value;
+                                            } else {
+                                                input.removeAttribute('name');
+                                                if (selectedTargets[checkbox.value])
+                                                    delete selectedTargets[checkbox.value];
+                                            }
+                                        }
+                                    });
+
+                                    // Convert objek selectedTargets menjadi string JSON dan masukkan ke input tersembunyi
+                                    document.getElementById('selectedTargets').value = JSON.stringify(selectedTargets);
+                                }
+
+                                // Memanggil fungsi updateSelectedTargets saat ada perubahan pada checkbox
+                                $(".form-check-input").change(function() {
+                                    updateSelectedTargets();
+                                });
+
+                                // Memanggil fungsi updateSelectedTargets saat ada perubahan pada input target
+                                $(".target-input").change(function() {
+                                    updateSelectedTargets();
+                                });
+
+                                // Validasi saat formulir akan disubmit
+                                document.getElementById("myForm").addEventListener("submit", function(event) {
+                                    // Mendapatkan daftar checkbox dan input target
+                                    var checkboxes = document.querySelectorAll(".form-check-input");
+
+                                    // Mengecek apakah minimal satu checkbox tercentang di semua halaman
+                                    var atLeastOneChecked = false;
+
+                                    for (var key in selectedTargets) {
+                                        if (selectedTargets.hasOwnProperty(key)) {
+                                            atLeastOneChecked = true;
+                                            break;
+                                        }
+                                    }
+
+                                    // Mengecek apakah semua target dari pegawai yang dipilih telah terisi
+                                    var allTargetsFilled = true;
+                                    for (var key in selectedTargets) {
+                                        if (selectedTargets.hasOwnProperty(key) && selectedTargets[key].trim() === "") {
+                                            allTargetsFilled = false;
+                                            break;
+                                        }
+                                    }
+
+
+                                    // Jika tidak ada checkbox yang tercentang, hentikan proses submit
+                                    if (!atLeastOneChecked) {
+                                        event.preventDefault();
+                                        document.getElementById("alertMessage").innerText = "Pilih minimal satu pegawai.";
+                                        document.getElementById("alertMessage").style.display = "block";
+                                        // Fokus ke checkbox pertama
+                                        checkboxes[0].focus();
+                                    } else if (!allTargetsFilled) { // Jika semua pegawai yang dipilih, memiliki target yang terisi
+                                        event.preventDefault();
+                                        document.getElementById("alertMessage").innerText =
+                                            "Semua target pegawai yang dipilih harus terisi.";
+                                        document.getElementById("alertMessage").style.display = "block";
+                                        // Fokus ke input target yang belum terisi untuk setiap pegawai yang dipilih
+                                        $(".target-input").each(function() {
+                                            if ($(this).val().trim() === "") {
+                                                $(this).focus();
+                                                return false; // Hentikan iterasi setelah fokus ke input pertama yang belum terisi
+                                            }
+                                        });
+                                    }
+                                });
+                            </script>
+
+                            <div class="form-group">
+                                <label for="inputCatatan">Catatan</label>
+                                <textarea class="form-control" id="catatan" name="catatan"></textarea>
+                            </div>
+                            <br>
+                            {{-- <button type="submit" class="btn btn-primary">Submit</button> --}}
                         </div>
-                    </form>
-                    <!--END FORM BUAT PEKERJAAN-->
+
+                        <!--END FORM BUAT PEKERJAAN-->
                 </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+                </form>
             </div>
         </div>
     </div>
@@ -365,7 +751,7 @@
 
                 <div class="modal-body">
                     <!--FORM BUAT PEKERJAAN-->
-                    <form action="{{ Route('update') }}" method="post">
+                    <form id="updateform" action="{{ Route('update') }}" method="post">
                         @csrf
                         <div class="container">
                             <div class="panel panel-default">
@@ -375,7 +761,7 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="inputPegawai">Nama Pegawai</label>
+                                        <label for="inputPegawai">Nama Pegawai<span class="text-danger">*</span></label>
                                         <div>
 
                                             <select name="pegawai_id" class="selectpicker form-control"
@@ -398,8 +784,19 @@
 
                             <div class="row">
                                 <div class="form-group col">
-                                    <label for="inputTask">Tugas</label>
-                                    <input type="text" class="form-control" id="inputTask" name="nama" required>
+                                    {{-- <label for="inputTask">Tugas</label>
+                                    <input type="text" class="form-control" id="inputTask" name="nama" required> --}}
+
+                                    <label>Pilih Tugas<span class="text-danger">*</span></label>
+                                    <select name="jenistask_id" id="inputTask" class="selectpicker form-control">
+                                        <option>Pilih Tugas</option>
+                                        @foreach ($jenis_tasks as $jenis)
+                                            <option value="{{ $jenis->no }}" data-satuan="{{ $jenis->satuan }}"
+                                                data-bobot="{{ $jenis->bobot }}">
+                                                {{ $jenis->tugas }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
                                 {{--
                                 <div class="form-group col">
@@ -408,33 +805,24 @@
                                 </div> --}}
 
                                 <div class="form-group">
-                                    <label for="inputAsal">Tim Pemberi Tugas</label>
+                                    <label for="inputAsal">Tim Pemberi Tugas<span class="text-danger">*</span></label>
                                     <div>
 
-                                        <select name="asal" class="selectpicker form-control" data-live-search="true"
-                                            id="inputAsal">
-                                            <option>Pilih Tim</option>
-                                            <option value="Subbag Umum">Subbag Umum</option>
-                                            <option value="Tim Kependudukan dan Ketahanan Sosial">Tim Kependudukan dan
-                                                Ketahanan Sosial</option>
-                                            <option value="Tim Kesejahteraan Rakyat">Tim Kesejahteraan Rakyat</option>
-                                            <option value="Tim Pertanian">Tim Pertanian</option>
-                                            <option value="Tim Industri dan Konstruksi">Tim Industri dan Konstruksi
-                                            </option>
-                                            <option value="Tim Distribusi, Keuangan, dan Pariwisata">Tim Distribusi,
-                                                Keuangan, dan Pariwisata</option>
-                                            <option value="Tim Survei Pendukung Nerwilis">Tim Survei Pendukung Nerwilis
-                                            </option>
-                                            <option value="Tim Statistik Harga">Tim Statistik Harga</option>
-                                            <option value="Tim Diseminasi">Tim Diseminasi</option>
-                                            <option value="Tim Pengolahan">Tim Pengolahan</option>
+                                        <select class="selectpicker form-control" data-live-search="true" id="inputAsal">
+                                            <option disabled>Pilih Tim</option>
+
+                                            @foreach ($jenis_tim as $jtim)
+                                                <option value="{{ $jtim->tim }}">
+                                                    {{ $jtim->tim }}
+                                                </option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
 
 
                                 <div class="form-group">
-                                    <label for="inputbobot">Bobot</label>
+                                    {{-- <label for="inputbobot">Bobot</label>
                                     <div>
                                         <select name="bobot" class="selectpicker form-control" data-live-search="true"
                                             id="inputbobot">
@@ -443,41 +831,91 @@
                                             <option>Sedang</option>
                                             <option>Kecil</option>
                                         </select>
-                                    </div>
+                                    </div> --}}
+                                    {{-- <div class="col-md-2">
+                                        <label for="inputbobot">Bobot</label>
+                                        <input type="text" class="form-control" id="inputbobot" name="bobot"
+                                            readonly="readonly">
+                                    </div> --}}
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-2">
-                                    <label for="inputTarget">Target</label>
+                                    <label for="inputTarget">Target <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="inputTarget" name="target" required>
                                 </div>
+
+                                <!-- Validasi -->
+                                <script>
+                                    // Tangkap form
+                                    var form = document.getElementById("updateform");
+
+                                    // Tambahkan event listener untuk peristiwa submit
+                                    form.addEventListener("submit", function(event) {
+                                        // Dapatkan nilai input target
+                                        var inputValue = document.getElementById("inputTarget").value;
+
+                                        // Gunakan ekspresi reguler untuk memeriksa apakah hanya berisi bilangan bulat atau desimal dengan titik
+                                        var regex = /^[0-9,.]+$/;
+
+                                        // Validasi input
+                                        if (!regex.test(inputValue)) {
+                                            // Tampilkan pesan validasi
+                                            document.getElementById("targetValidationMessage").innerText =
+                                                "Input harus berupa bilangan bulat, huruf tidak diperbolehkan.";
+
+                                            // Set fokus ke input target
+                                            document.getElementById("inputTarget").focus();
+
+                                            // Mencegah pengiriman formulir jika validasi gagal
+                                            event.preventDefault();
+                                        } else {
+                                            // Bersihkan pesan validasi jika input valid
+                                            document.getElementById("targetValidationMessage").innerText = "";
+                                        }
+                                    });
+                                </script>
+
                                 <div class="col-md-2">
                                     <label for="inputRealisasi">Realisasi</label>
                                     <input type="text" class="form-control" id="inputRealisasi" name="realisasi"
-                                        required>
+                                        readonly="readonly">
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label for="inputbobot">Bobot</label>
+                                    <input type="text" class="form-control" id="inputbobot" readonly="readonly">
                                 </div>
                                 <div class="col-md-4">
                                     <label for="inputSatuan">Satuan</label>
-                                    <input type="text" class="form-control" id="inputSatuan" name="satuan" required>
+                                    <input type="text" class="form-control" id="inputsatuan" readonly="readonly">
                                 </div>
                             </div>
-
+                            <small id="targetValidationMessage" class="text-danger"></small>
                             <div class="form-group">
-                                <label for="inputDeadline">Deadline</label>
+                                <label for="inputDeadline">Deadline <span class="text-danger">*</span></label>
                                 <input type="date" class="form-control" id="inputDeadline" name="deadline"
                                     required />
+                            </div>
+                            <div class="form-group">
+                                <label for="inputCatatan">Catatan</label>
+                                <textarea class="form-control" id="inputCatatan" name="catatan"></textarea>
                             </div>
                             <input type="hidden" class="form-control" name="tgl_realisasi" />
                             <input type="hidden" class="form-control" name="nilai" />
                             <input type="hidden" class="form-control" name="keterangan" />
                             <input type="hidden" class="form-control" name="file" />
                             <br>
-                            <button type="submit" class="btn btn-primary">Simpan</button>
+
                         </div>
-                    </form>
-                    <!--END FORM BUAT PEKERJAAN-->
+
+                        <!--END FORM BUAT PEKERJAAN-->
                 </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+                </form>
             </div>
         </div>
     </div>
@@ -496,12 +934,16 @@
                     <form action="{{ route('delete') }}" method="post">
                         @csrf
                         <input type="hidden" name="task_id" id="inputIdDelete">
-                        <button type="submit" class="btn btn-sm btn-danger">
-                            <i class="fas fa-trash"></i> Hapus
-                        </button>
-                    </form>
-                    <!--END FORM BUAT PEKERJAAN-->
+
+
+                        <!--END FORM BUAT PEKERJAAN-->
                 </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn light btn-bahaya">
+                        <i class="fas fa-trash"></i> Hapus
+                    </button>
+                </div>
+                </form>
             </div>
         </div>
     </div>
@@ -539,21 +981,41 @@
                                     <input type="text" class="form-control" id="inputTim" name="" disabled>
                                 </div>
                             </div>
+
                             <div class="form-group col">
                                 <br>
                                 <label for="inputTim">Hasil Penugasan</label>
                                 <div class="col dokumen"></div>
                             </div>
                             <div class="form-group col">
-                                <label for="inputnilai">Beri Nilai</label>
-                                <input type="text" class="form-control" id="inputnilai" name="nilai" required>
+                                <label for="inputnilai">Beri Nilai Kuantitas<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="inputnilaikuantitas"
+                                    name="nilai_kuantitas" required>
+                            </div>
+                            <div class="form-group col">
+                                <label for="inputnilai">Beri Nilai Kualitas<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="inputnilaikualitas" name="nilai_kualitas"
+                                    required>
                             </div>
                             <br>
-                            <button type="submit" class="btn btn-primary">Submit</button>
+
                         </div>
-                    </form>
-                    <!--END FORM BUAT PEKERJAAN-->
+
+                        <!--END FORM BUAT PEKERJAAN-->
                 </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-custom">Submit</button>
+                    </form>
+                    <form action="{{ Route('kembalikan') }}" method="post">
+                        @csrf
+                        <div class="form-group col">
+                            <input type="hidden" class="form-control" id="inputugas_id" name="task_id">
+                            {{-- <input type="hidden" class="form-control" id="inputfile_id" name="file_id"> --}}
+                        </div>
+                        <button type="submit" class="btn btn-custom">Kembalikan</button>
+                    </form>
+                </div>
+
             </div>
         </div>
     </div>
@@ -611,14 +1073,34 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <br>
-                <form action="{{ route('import') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <input type="file" name="file" accept=".xlsx, .xls">
-                    <button type="submit">Impor Data</button>
-                </form>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <div class="modal-body">
+                    <form action="{{ route('import') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="form-group col">
+                            <label>Upload Template<span class="text-danger">*</span></label>
+                            <input type="file" name="file" accept=".xlsx, .xls" class="form-control">
+                        </div>
+                        <br>
+                        <Strong>Template Alokasi Pekerjaan:</Strong>
+                        <a href="{{ asset('template_plotting/Template.xlsx') }}" download="Template.xlsx"
+                            class="btn btn-link">
+                            <i class="fas fa-download" style="color: green;"></i>
+                        </a>
+                        <br>
                 </div>
+
+                <div class="modal-footer">
+                    <div class="row">
+                        <div class="form-group col px-1">
+                            <button type="submit" class="btn btn-primary">Impor</button>
+                        </div>
+                        <div class="form-group col px-0">
+                            <button type="button" class="btn light btn-bahaya" data-bs-dismiss="modal">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+                </form>
+
             </div>
         </div>
     </div>
@@ -631,9 +1113,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="successModalLabel">Sukses</h5>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         {{ session('success') }}
@@ -650,13 +1130,15 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="successModalLabel">Sukses</h5>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                        <h5 class="modal-title" id="successModalLabel">Warning</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        {{ session('failed') }}
+                        <ul>
+                            @foreach (session('failed') as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
@@ -665,6 +1147,17 @@
             </div>
         </div>
     @endif
+
+    @if (session('importErrors'))
+        <div class="alert alert-danger">
+            <ul>
+                @foreach (session('importErrors') as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
 
 
     @if (session('success'))
@@ -701,10 +1194,34 @@
             });
         });
 
+        $(document).ready(function() {
+            $('#inputTaskk').change(function() {
+                const selectedOption = $(this).find(':selected');
+                const selectedSatuan = selectedOption.data('satuan');
+                const selectedBobot = selectedOption.data('bobot');
+
+                $('#inputSatuann').val(selectedSatuan);
+                $('#inputBobott').val(selectedBobot);
+            });
+        });
+
+        $(document).ready(function() {
+            $('#inputTask').change(function() {
+                const selectedOptionn = $(this).find(':selected');
+                const selectedSatuann = selectedOptionn.data('satuan');
+                const selectedBobott = selectedOptionn.data('bobot');
+
+                $('#inputsatuan').val(selectedSatuann);
+                $('#inputbobot').val(selectedBobott);
+            });
+        });
+
+
         $(".fa-square-pen").click(function() {
             let key = $(this).attr('data');
             let id = $(`#id${key}`).val();
             let pegawai_id = $(`#pegawai_id${key}`).val();
+            let jenistask_id = $(`#jenistask_id${key}`).val();
             let pegawai = $(`#Pegawai${key}`).text();
             let nama = $(`#Nama${key}`).text();
             let asal = $(`#Asal${key}`).text();
@@ -712,18 +1229,20 @@
             let realisasi = $(`#Realisasi${key}`).text();
             let satuan = $(`#Satuan${key}`).text();
             let bobot = $(`#Bobot${key}`).text();
+            let catatan = $(`#Catatan${key}`).text();
             let deadline = $(`#Deadline${key}`).data('value');
 
             $('#inputId').val(id);
             $('#inputPegawai').val(pegawai_id);
             $('#inputpegawai_id').val(pegawai_id);
-            $('#inputTask').val(nama);
+            $('#inputTask').val(jenistask_id);
             $('#inputAsal').val(asal);
             $('#inputbobot').val(bobot);
             $('#inputTarget').val(target);
             $('#inputRealisasi').val(realisasi);
-            $('#inputSatuan').val(satuan);
+            $('#inputsatuan').val(satuan);
             $('#inputDeadline').val(deadline);
+            $('#inputCatatan').val(catatan);
         });
 
         $(".hapus").click(function() {
@@ -740,9 +1259,11 @@
         //     $('#inputcetakpegawai_id').val(id);
         // });
 
-        $(".fa-circle-info").click(function() {
+        $(".fa-check-circle").click(function() {
             let keyy = $(this).attr('data');
             let idd = $(`#id${keyy}`).val();
+            let iddd = $(`#tugas_id${keyy}`).val();
+            // let file_idd = $(`#file_idd${keyy}`).val();
             let pegawai_idd = $(`#pegawai_id${keyy}`).val();
             let pegawaii = $(`#Pegawai${keyy}`).text();
             let namaa = $(`#Nama${keyy}`).text();
@@ -750,96 +1271,153 @@
             let file = $(`#file${keyy}`).val();
 
             $('#inputidnmr').val(idd);
+            $('#inputugas_id').val(iddd);
+            // $('#inputfile_id').val(file_idd);
             $('#inputOrang').val(pegawaii);
             $('#inputpegawaiidnmr').val(pegawai_idd);
             $('#inputTugas').val(namaa);
             $('#inputTim').val(asall);
-            $('.dokumen').html(
-                `<a class ='unduh' href='download-file/${file}'><button class='btn btn-success'type='button'>Download</button></a>`
+            // $('.dokumen').html(
+            //     `<a class ='unduh' href='${file}'><button class='btn light btn-download'type='button'><i class="bi bi-eye"></i> Lihat</button></a>`
 
-            );
+            // );
         });
+    </script>
 
-        function filter() {
-            let dropdownbulanreal, table, rows, cells,
-                dl, real, filterbulanreal, dropdowntahunreal, filtertahunreal,
-                dropdownbulandl, dropdowntahundl, filterbulandl, filtertahundl;
-            dropdownbulanreal = $('#bulanreal');
-            dropdowntahunreal = $('#tahunreal');
-            dropdownbulandl = $('#bulandl');
-            dropdowntahundl = $('#tahundl');
-            table = document.getElementById("dtBasicExample");
-            body = table.getElementsByTagName("tbody")[0];
-            rows = body.getElementsByTagName("tr");
-            filterbulanreal = dropdownbulanreal.val();
-            filtertahunreal = dropdowntahunreal.val();
-            filterbulandl = dropdownbulandl.val();
-            filtertahundl = dropdowntahundl.val();
-            for (let row of rows) {
-                cells = row.getElementsByTagName("td");
-                dl = cells[8] || null;
-                real = cells[9] || null;
-                if (!dl) row.style.display = "";
-                else {
-                    if (
-                        (filterbulanreal === "Semua" && filtertahunreal === "Semua" && filterbulandl === "Semua" &&
-                            filtertahundl === "Semua") ||
-                        !dl ||
-                        (filterbulanreal === "Semua" && filtertahunreal === "Semua" && filterbulandl === "Semua" &&
-                            filtertahundl === dl.textContent.substring(7, 11)) ||
-                        (filterbulanreal === "Semua" && filtertahunreal === "Semua" && filterbulandl === dl.textContent
-                            .substring(3, 6) && filtertahundl === "Semua") ||
-                        (filterbulanreal === "Semua" && filtertahunreal === "Semua" && filterbulandl === dl.textContent
-                            .substring(3, 6) && filtertahundl === dl.textContent.substring(7, 11)) ||
-                        (filterbulanreal === "Semua" && filtertahunreal === real.textContent.substring(7, 11) &&
-                            filterbulandl === "Semua" && filtertahundl === "Semua") ||
-                        (filterbulanreal === "Semua" && filtertahunreal === real.textContent.substring(7, 11) &&
-                            filterbulandl === "Semua" && filtertahundl === dl.textContent.substring(7, 11)) ||
-                        (filterbulanreal === "Semua" && filtertahunreal === real.textContent.substring(7, 11) &&
-                            filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === "Semua") ||
-                        (filterbulanreal === "Semua" && filtertahunreal === real.textContent.substring(7, 11) &&
-                            filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === dl.textContent.substring(7,
-                                11)) ||
-                        (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === "Semua" &&
-                            filterbulandl === "Semua" && filtertahundl === "Semua") ||
-                        (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === "Semua" &&
-                            filterbulandl === "Semua" && filtertahundl === dl.textContent.substring(7, 11)) ||
-                        (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === "Semua" &&
-                            filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === "Semua") ||
-                        (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === "Semua" &&
-                            filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === dl.textContent.substring(7,
-                                11)) ||
-                        (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === real.textContent.substring(
-                            7, 11) && filterbulandl === "Semua" && filtertahundl === "Semua") ||
-                        (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === real.textContent.substring(
-                            7, 11) && filterbulandl === "Semua" && filtertahundl === dl.textContent.substring(7, 11)) ||
-                        (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === real.textContent.substring(
-                            7, 11) && filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === "Semua") ||
-                        (filterbulanreal === real.textContent.substring(3, 6) && filtertahunreal === real.textContent.substring(
-                                7, 11) && filterbulandl === dl.textContent.substring(3, 6) && filtertahundl === dl.textContent
-                            .substring(7, 11))
-                    ) {
-                        row.style.display = ""; // shows this row
-                    } else {
+    <script>
+        // Fungsi untuk membuka modal dan mengisi dengan konten yang sesuai
+        function openModalWithFile(task) {
+            let dokumenContainer = $('.dokumen');
+            dokumenContainer.empty(); // Kosongkan konten sebelumnya
 
-                        row.style.display = "none"; // hides this row
-                    }
-                }
+            if (task.link_file) {
+                dokumenContainer.append(`
+                <a class='unduh' href='${task.link_file}' target='_blank'>
+                    <button class='btn light btn-download' type='button'>
+                        <i class="bi bi-eye"></i> Lihat Link
+                    </button>
+                </a>
+            `);
             }
+
+            if (task.files && task.files.length > 0) {
+                task.files.forEach(file => {
+                    dokumenContainer.append(`
+                    <a class='unduh' href='/file/${file.file_name}' target='_blank'>
+                        <button class='btn light btn-download' type='button'>
+                            <i class="bi bi-eye"></i> Lihat File
+                        </button>
+                    </a>
+                `);
+                });
+            }
+
+            $('#penilaiankerja').modal('show');
         }
+
+        // Event listener untuk tombol "Lihat"
+        $(document).ready(function() {
+            $('.lihat-dokumen-btn').on('click', function(e) {
+                e.preventDefault(); // Ini untuk mencegah tautan default
+                var taskData = $(this).data('task');
+                openModalWithFile(taskData);
+            });
+        });
     </script>
 
     <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+
+            // Panggil Select2 pada elemen dropdown dengan id "inputTaskk"
+            $('#inputTaskk').select2({
+                placeholder: 'Pilih Tugas', // Teks placeholder untuk input pencarian
+                allowClear: true, // Menampilkan tombol "Hapus" untuk menghapus pilihan
+                width: '100%', // Lebar dropdown
+                dropdownParent: $('#tambahkerja')
+            });
+
+            // Event listener untuk mengisi input bobot saat memilih jenis pekerjaan
+            $('#inputTaskk').on('change', function() {
+                var selectedOption = $(this).find('option:selected');
+                var bobot = selectedOption.attr('data-bobot');
+                $('#inputBobot').val(bobot);
+            });
+
+            // Event listener untuk mengisi input satuan saat memilih jenis pekerjaan
+            $('#inputTaskk').on('change', function() {
+                var selectedOption = $(this).find('option:selected');
+                var satuan = selectedOption.attr('data-satuan');
+                $('#inputSatuan').val(satuan);
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            // Panggil Select2 pada elemen dropdown dengan id "inputTaskk"
+            $('#inputTask').select2({
+                allowClear: true, // Menampilkan tombol "Hapus" untuk menghapus pilihan
+                width: '100%', // Lebar dropdown
+                dropdownParent: $('#updatekerja')
+            });
+
+            // Event listener untuk mengisi input bobot saat memilih jenis pekerjaan
+            $('#inputTask').on('change', function() {
+                var selectedOption = $(this).find('option:selected');
+                var bobot = selectedOption.attr('data-bobot');
+                $('#inputbobot').val(bobot);
+            });
+
+            // Event listener untuk mengisi input satuan saat memilih jenis pekerjaan
+            $('#inputTask').on('change', function() {
+                var selectedOption = $(this).find('option:selected');
+                var satuan = selectedOption.attr('data-satuan');
+                $('#inputsatuan').val(satuan);
+            });
+        });
+    </script>
+
+    <!-- mengisi otomatis field asal tim -->
+    <script>
+        $(document).ready(function() {
+            var timYangLogin =
+                "{{ Auth::check() && Auth::user()->JenisJabatan && Auth::user()->JenisJabatan->NamaTim ? Auth::user()->JenisJabatan->NamaTim->tim : '' }}";
+            console.log(timYangLogin);
+            $("#inputAsall").val(timYangLogin).selectpicker('refresh');
+        });
+    </script>
+
+    {{-- <script>
+        document.getElementById("inputTaskk").addEventListener("change", function() {
+            var selectedOption = this.options[this.selectedIndex];
+            var bobot = selectedOption.getAttribute("data-bobot");
+            document.getElementById("inputBobot").value = bobot;
+        });
+    </script>
+
+    <script>
+        document.getElementById("inputTaskk").addEventListener("change", function() {
+            var selectedOption = this.options[this.selectedIndex];
+            var satuan = selectedOption.getAttribute("data-satuan");
+            document.getElementById("inputSatuan").value = satuan;
+        });
+    </script> --}}
+
+
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
     <script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
     <script src="https://cdn.datatables.net/rowgroup/1.4.0/js/dataTables.rowGroup.min.js"></script>
 
     <link rel="stylesheet" href=" https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css">
 
 
+    <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
+    <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/fixedColumns.dataTables.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css">
 
 
     {{-- <script src="https://code.jquery.com/jquery-3.7.0.js"></script>

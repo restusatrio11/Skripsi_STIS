@@ -1,6 +1,19 @@
+@font-face {
+    font-family: 'Poppins';
+    src: url('') format('woff2'); /* untuk format WOFF2 */
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+
 /* Mengganti font untuk seluruh situs */
 body {
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; /* Ganti 'Nunito' dengan font yang Anda inginkan */
+    font-family: 'Poppins', sans-serif;
+}
+
+h1, h2, h3 {
+    font-family: 'Poppins', sans-serif;
 }
 
 
@@ -20,6 +33,10 @@ body {
 
 .border-left-orange-P {
     border-left: 5px solid  #36b9cc; /* Warna oranye yang Anda inginkan */
+}
+
+.page-link{
+    cursor: pointer;
 }
 
 
@@ -55,6 +72,7 @@ body {
     --breakpoint-xl: 1200px;
     --font-family-sans-serif: "Nunito",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
     --font-family-monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+    --font-family-title: poppins, sans-serif, sans-serif;
 }
 
 .icon-color-clipboard{
@@ -111,10 +129,7 @@ body {
     }
     }
 
-    body {
-        font-family: 'Cambria';
-        /* gaya lainnya */
-    }
+
 
     .visual {
         background-color: white;
@@ -137,4 +152,91 @@ body {
         background-color: #FF5733;
         color: #fff;
     }
+
+    .badge {
+        line-height: 1.5;
+        border-radius: 0.25rem;
+        font-size: 12px;
+        font-weight: 500;
+        padding: 5px 12px;
+        border: 0.0625rem solid transparent;
+    }
+
+    .light.badge-success {
+        background-color: #daf5e6;
+        color: #3AC977; }
+
+    .light.btn-download{
+        background-color: #daf5e6;
+        color: #3AC977;
+    }
+
+    .light.btn-download:hover{
+        background-color: #3AC977;
+        color: #ffffff;
+    }
+
+    .light.badge-warning {
+        background-color: #ffeccc;
+        color: #FF9F00; }
+
+    .light.badge-dark {
+        background-color: #eeeeee;
+        color: #6e6e6e; }
+
+        .light.badge-primary {
+            background-color: #b3daff;
+            color: #1171f0; }
+
+            .light.badge-kbps {
+                background-color: #ffd1b6;
+                color: #fc7b25; }
+
+                .light.badge-danger {
+                    background-color: #fcb5b5;
+                    color: #dd4242; }
+
+                .light.btn-bahaya{
+                    background-color: #fcb5b5;
+                    color: #dd4242;
+                }
+
+                .light.btn-bahaya:hover {
+                    background-color: #dd4242;
+                    color: #fff;
+                    /* Warna biru tua yang berbeda saat dihover */
+                }
+
+        .icon-box.icon-box-md {
+            height: 1.75rem;
+            width: 1.75rem;
+            line-height: 1.55rem;
+            border-radius: 6px;
+        }
+
+        .icon-box {
+            height: 2.5rem;
+            width: 2.5rem;
+            position: relative;
+            display: inline-block;
+            text-align: center;
+            line-height: 2.375rem;
+            border-radius: 0.625rem;
+        }
+
+        .bg-danger-light {
+            background: rgba(255, 222, 222, 0.4);
+        }
+
+        .bg-primary-light {
+            background: var(--primary);
+        }
+
+        /* Untuk menyembunyikan fixed column left pada layar kecil (responsif) */
+    @media only screen and (max-width: 768px) {
+    .dtfc-fixed-left {
+        position: relative !important;
+        left: auto !important;
+    }
+}
 
